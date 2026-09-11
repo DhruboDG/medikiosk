@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import type { Lang, Localised } from "../lib/types.ts";
 import { abortVoice } from "../lib/asr.ts";
 import { speak } from "../lib/tts.ts";
@@ -38,12 +38,19 @@ export default function KioskShell({
   children,
 }: KioskShellProps) {
   const [hindiVoiceMissing, setHindiVoiceMissing] = useState(false);
+  // Strict Mode runs this effect twice per commit with identical deps, which
+  // would otherwise queue the same prompt to speak twice.
+  const lastSpokenRef = useRef<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
-    speak(prompt[lang], lang).then((result) => {
-      if (!cancelled) setHindiVoiceMissing(result.hindiVoiceMissing);
-    });
+    const text = prompt[lang];
+    if (lastSpokenRef.current !== text) {
+      lastSpokenRef.current = text;
+      speak(text, lang).then((result) => {
+        if (!cancelled) setHindiVoiceMissing(result.hindiVoiceMissing);
+      });
+    }
     return () => {
       cancelled = true;
       // Rule 2: a screen change detaches whatever DOM node started

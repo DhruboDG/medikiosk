@@ -124,12 +124,10 @@ function label(concept: string): string {
 function fromRules(session: Session): RedFlag {
   const { words, recentChestPain, recentWithCardiac } = gather(session);
 
-  for (const c of HIGH_ON_THEIR_OWN) {
-    if (words.has(c)) {
-      return { level: "high", concept: c, reason: `${label(c)} is a high-priority sign on its own.${quote(words.get(c))}` };
-    }
-  }
-
+  // Checked before HIGH_ON_THEIR_OWN: chest pain plus a recent onset or a
+  // cardiac companion is the strongest framing of the case and must not lose
+  // out to a HIGH_ON_THEIR_OWN concept (e.g. breathlessness) that also fired.
+  // Both land at "high" either way; only the reported reason and concept move.
   if (words.has("chest_pain")) {
     if (recentChestPain !== null) {
       return { level: "high", concept: "chest_pain",
@@ -144,6 +142,12 @@ function fromRules(session: Session): RedFlag {
         : quote(chestWords);
       return { level: "high", concept: "chest_pain",
         reason: `Chest pain together with ${label(companion).toLowerCase()}.${said}` };
+    }
+  }
+
+  for (const c of HIGH_ON_THEIR_OWN) {
+    if (words.has(c)) {
+      return { level: "high", concept: c, reason: `${label(c)} is a high-priority sign on its own.${quote(words.get(c))}` };
     }
   }
 
@@ -174,4 +178,19 @@ export function evaluate(session: Session): RedFlag {
   const prior = session.redFlag;
   if (prior && (RANK[prior.level] ?? 0) > RANK[rules.level]) return prior;
   return rules;
+}
+
+/* Concepts that mean the patient should stop answering questions and go to
+   the emergency department now. Deliberately narrower than HIGH_ON_THEIR_OWN:
+   chest_pain, breathlessness alone and the two-sign cardiac rule over-triage
+   by design, to catch borderline cases for a physician to review, and must
+   not interrupt the questionnaire. */
+export const EMERGENCY_CONCEPTS = [
+  "unconscious", "stroke", "choking", "severe_burn", "coughing_blood", "bleeding",
+];
+
+/** True when the session has raised any concept in EMERGENCY_CONCEPTS. */
+export function isEmergency(session: Session): boolean {
+  const { words } = gather(session);
+  return EMERGENCY_CONCEPTS.some((c) => words.has(c));
 }

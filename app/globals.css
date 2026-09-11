@@ -282,3 +282,178 @@ body {
   background: var(--kiosk-error-bg);
   color: var(--kiosk-error-fg);
 }
+
+/* ---------- Tap options (single/multi question answers, gender) ---------- */
+
+.kiosk-options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.kiosk-option {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-height: var(--kiosk-touch-min);
+  padding: 14px 20px;
+  font-size: var(--kiosk-font-md);
+  font-weight: 600;
+  text-align: left;
+  border-radius: 14px;
+  border: 2px solid var(--kiosk-border);
+  background: var(--kiosk-surface);
+  color: var(--kiosk-fg);
+  cursor: pointer;
+}
+
+.kiosk-option-icon {
+  font-size: 1.6rem;
+  line-height: 1;
+  flex: 0 0 auto;
+}
+
+.kiosk-option-label {
+  flex: 1;
+}
+
+.kiosk-option.selected {
+  background: var(--kiosk-accent);
+  color: var(--kiosk-accent-fg);
+  border-color: var(--kiosk-accent);
+}
+
+/* ---------- Landing screen ---------- */
+
+.landing-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  padding: 32px var(--kiosk-space) 48px;
+  max-width: 640px;
+  width: 100%;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.landing-title {
+  font-size: var(--kiosk-font-xl);
+  font-weight: 800;
+  margin: 0;
+}
+
+.landing-subtitle {
+  font-size: var(--kiosk-font-md);
+  color: var(--kiosk-muted);
+  margin: 0;
+}
+
+.landing-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  text-align: left;
+}
+
+.landing-group-label {
+  font-size: 1rem;
+  color: var(--kiosk-muted);
+  font-weight: 600;
+}
+
+.landing-choice-row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.landing-choice-btn {
+  flex: 1 1 140px;
+  min-height: var(--kiosk-touch-min);
+  padding: 12px 16px;
+  font-size: var(--kiosk-font-md);
+  font-weight: 700;
+  border-radius: 14px;
+  border: 2px solid var(--kiosk-border);
+  background: var(--kiosk-surface);
+  color: var(--kiosk-fg);
+  cursor: pointer;
+}
+
+.landing-choice-btn.selected {
+  background: var(--kiosk-accent);
+  color: var(--kiosk-accent-fg);
+  border-color: var(--kiosk-accent);
+}
+
+.landing-choice-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.landing-note {
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.landing-start-btn {
+  min-height: 72px;
+  min-width: 220px;
+  padding: 16px 32px;
+  font-size: var(--kiosk-font-lg);
+  font-weight: 800;
+  border-radius: 16px;
+  border: 2px solid var(--kiosk-accent);
+  background: var(--kiosk-accent);
+  color: var(--kiosk-accent-fg);
+  cursor: pointer;
+}
+
+/* ---------- Done screen ---------- */
+
+.done-token {
+  font-size: 4rem;
+  font-weight: 800;
+  margin: 0;
+}
+
+/* ---------- Emergency screen ---------- */
+
+.emergency-shell {
+  --emergency-alert: #b30000;
+}
+
+.emergency-shell.kiosk-contrast {
+  --emergency-alert: #ff6b6b;
+}
+
+.emergency-main {
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 20px;
+}
+
+.emergency-headline {
+  font-size: 3rem;
+  line-height: 1.2;
+  font-weight: 800;
+  color: var(--emergency-alert);
+  margin: 0;
+}
+
+.emergency-sub {
+  font-size: var(--kiosk-font-lg);
+  font-weight: 700;
+  margin: 0;
+}
+
+.emergency-reason {
+  font-size: var(--kiosk-font-md);
+  color: var(--kiosk-muted);
+  margin-top: 12px;
+}

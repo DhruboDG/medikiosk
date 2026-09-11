@@ -69,6 +69,10 @@ export async function speak(text: string, lang: Lang): Promise<SpeakResult> {
   utterance.lang = BCP47[lang];
   const voice = pickVoice(lang, voices);
   if (voice) utterance.voice = voice;
+  // getVoicesAsync() awaits, so a second call to speak() can start and finish
+  // its own cancel() while this one is still waiting. Cancelling again right
+  // before speak() clears anything a racing call queued in the meantime.
+  synth.cancel();
   synth.speak(utterance);
 
   return { spoken: true, hindiVoiceMissing: lang === "hi" && !hindiVoiceAvailable(voices) };

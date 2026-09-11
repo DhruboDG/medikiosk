@@ -83,34 +83,58 @@ export const CONCEPTS: Record<string, Concept> = {
     "दिल का दौरा","हार्ट अटैक","दिल की धड़कन बंद",
     "dil ka daura","dil ka dora"
   ]},
+  /* These six concepts (through severe_burn) drive isEmergency() in
+     lib/redflag.ts, which stops the questionnaire and sends the patient
+     straight to app/emergency/page.tsx. Every form below the first line of
+     each list was added after an audit found the original forms matched
+     only clinical-sounding phrasing (English) or a narrower verb form than
+     Hindi speakers actually use (Hindi), so a lay description of a real
+     emergency raised nothing. New forms are chosen to require a
+     symptom-specific anchor word (गले, तरफ, throat, burn/burned rather than
+     bare "burn", which also means heartburn) so they don't fire on the
+     unrelated idioms those bare roots carry (अटकना/फंसना for stuck traffic
+     or pending work, टेढ़ा for "a tricky matter", लटकना for sulking). */
   unconscious: { label: { en: "Unconscious", hi: "बेहोशी" }, forms: [
     "unconscious","fainted","passed out","not responding","collapsed",
-    "बेहोश","बेहोशी","होश नहीं","गिर पड़",
+    "won't wake up","not waking up","blacked out","unresponsive",
+    "बेहोश","बेहोशी","होश नहीं","गिर पड़","गिर पड़ा","गिर पड़ी","गिर पड़े",
+    "होश में नहीं","जवाब नहीं दे","जाग नहीं",
     "behosh","behoshi","hosh nahi"
   ]},
   stroke: { label: { en: "Stroke signs", hi: "लकवा" }, forms: [
     "stroke","face drooping","slurred speech","weakness on one side","paralysis",
+    "face is drooping","mouth is crooked","crooked mouth","became slurred","weak on one side",
+    "cant move one side","can not move one side","cannot move one side",
+    "couldnt talk properly","could not talk properly","cannot talk properly",
     "लकवा","पक्षाघात","मुंह टेढ़ा","एक तरफ कमजोरी","बोलने में लड़खड़",
+    "मुंह एक तरफ लटक","मुंह एक तरफ टेढ़ा","तरफ ताकत नहीं","लड़खड़ा","सुन्न",
     "lakwa","lakva","pakshaghat"
   ]},
   bleeding: { label: { en: "Heavy bleeding", hi: "अधिक रक्तस्राव" }, forms: [
     "heavy bleeding","bleeding a lot","lot of blood","haemorrhage","hemorrhage",
-    "खून बह","बहुत खून","खून निकल","रक्तस्राव",
+    "bleeding","blood coming",
+    "खून बह","बहुत खून","खून निकल","खून रिस","रक्तस्राव",
     "khoon beh","bahut khoon","khoon nikal"
   ]},
   coughing_blood: { label: { en: "Coughing blood", hi: "खांसी में खून" }, forms: [
     "coughing blood","blood in cough","cough with blood","haemoptysis",
-    "खांसी में खून","खून की खांसी","बलगम में खून",
+    "coughed up blood","coughing up blood","cough up blood",
+    "blood in his cough","blood in her cough","blood in my cough","spitting blood",
+    "खांसी में खून","खून की खांसी","बलगम में खून","खून थूक","थूक में खून",
     "khansi mein khoon","balgam mein khoon"
   ]},
   choking: { label: { en: "Choking", hi: "गला घुटना" }, forms: [
     "choking","something stuck in throat",
+    "stuck in his throat","stuck in her throat","stuck in my throat","stuck in the throat",
+    "gag","choke",
     "गला घुट","गले में फंस","दम घुट",
+    "गले में अटक","गले में कुछ अटक","गले में कुछ फंस","गले में निवाला अटक","गले में हड्डी अटक",
     "gala ghut","gale mein phas"
   ]},
   severe_burn: { label: { en: "Severe burn", hi: "गंभीर जलन" }, forms: [
     "severe burn","burnt","burn injury","scalded",
-    "जल गया","जल गई","झुलस","गंभीर जलन",
+    "burned","bad burn","boiling water","scalding water",
+    "जल गया","जल गई","झुलस","गंभीर जलन","उबलता पानी","गहरी जलन",
     "jal gaya","jhulas"
   ]},
   /* answer-level concepts */

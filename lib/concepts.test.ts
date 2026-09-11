@@ -2,7 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { CONCEPTS, conceptsIn } from "./concepts.ts";
-import { evaluate, ONSET_NODE, ONSET_UNDER_24H } from "./redflag.ts";
+import { EMERGENCY_CONCEPTS, evaluate, isEmergency, ONSET_NODE, ONSET_UNDER_24H } from "./redflag.ts";
 import type { Answer, HistoryNode, RedFlag, Session } from "./types.ts";
 
 const TREE: HistoryNode[] = JSON.parse(
@@ -243,6 +243,82 @@ for (const text of [
   });
 }
 
+// isEmergency: the redirect to app/emergency/page.tsx fires only for the six
+// named concepts, never for chest_pain, breathlessness alone or the two-sign
+// cardiac rule, since those over-triage by design and must not stop the
+// questionnaire.
+
+const EMERGENCY_PHRASES: Record<string, string> = {
+  unconscious: "he fainted and is not responding",
+  stroke: "she has face drooping since this morning",
+  choking: "something stuck in throat",
+  severe_burn: "she has a severe burn on her arm",
+  coughing_blood: "coughing blood since this morning",
+  bleeding: "heavy bleeding from the wound",
+};
+
+test("EMERGENCY_CONCEPTS names exactly the six concepts in the brief", () => {
+  assert.deepEqual(
+    [...EMERGENCY_CONCEPTS].sort(),
+    ["bleeding", "choking", "coughing_blood", "severe_burn", "stroke", "unconscious"].sort(),
+  );
+});
+
+for (const concept of EMERGENCY_CONCEPTS) {
+  const text = EMERGENCY_PHRASES[concept];
+  test(`isEmergency: "${text}" (${concept}) -> true`, () => {
+    assert.ok(conceptsIn(text).includes(concept), `concepts: ${conceptsIn(text)}`);
+    assert.equal(isEmergency(sessionSaying(text)), true);
+  });
+}
+
+test("isEmergency: chest pain alone -> false", () => {
+  assert.equal(isEmergency(sessionSaying("I have chest pain")), false);
+});
+
+test("isEmergency: breathlessness alone -> false", () => {
+  assert.equal(isEmergency(sessionSaying("I can not breathe")), false);
+});
+
+test("isEmergency: the two-sign cardiac rule alone -> false", () => {
+  const text = "Since last night my chest feels strange and I keep sweating";
+  assert.equal(evaluate(sessionSaying(text)).level, "high", "sanity: this is still a high red flag");
+  assert.equal(isEmergency(sessionSaying(text)), false);
+});
+
+test("isEmergency: true alongside an unrelated high sign, e.g. bleeding and chest pain", () => {
+  const session = sessionSaying("heavy bleeding and I also have chest pain");
+  assert.equal(isEmergency(session), true);
+});
+
+// Chest reason preference: chest pain with a cardiac companion must be
+// reported as the chest_pain rule, not as whichever HIGH_ON_THEIR_OWN concept
+// (e.g. breathlessness) also happens to be present in the same answer.
+
+test('chest pain + sweating + breathlessness -> chest_pain reason, not "Breathlessness is a high-priority sign on its own"', () => {
+  const text = "I have chest pain, I am sweating and I can not breathe";
+  const flag = evaluate(sessionSaying(text));
+  assert.equal(flag.level, "high");
+  assert.equal(flag.concept, "chest_pain");
+  assert.ok(flag.reason.startsWith("Chest pain together with sweating"), flag.reason);
+  assert.ok(!flag.reason.startsWith("Breathlessness"), flag.reason);
+});
+
+test("chest pain with a recent onset still wins over a HIGH_ON_THEIR_OWN concept in the same answer", () => {
+  const text = "since this morning I have chest pain and I can not breathe";
+  const flag = evaluate(sessionSaying(text));
+  assert.equal(flag.level, "high");
+  assert.equal(flag.concept, "chest_pain");
+  assert.ok(flag.reason.startsWith("Chest pain that began less than 24 hours ago"), flag.reason);
+});
+
+test("breathlessness alone (no chest pain) still reports its own HIGH_ON_THEIR_OWN reason", () => {
+  const flag = evaluate(sessionSaying("I can not breathe"));
+  assert.equal(flag.level, "high");
+  assert.equal(flag.concept, "breathlessness");
+  assert.ok(flag.reason.startsWith("Breathlessness is a high-priority sign on its own"), flag.reason);
+});
+
 test("resp_speech tap options: only cannot_speak raises it", () => {
   const node = TREE.find((n) => n.id === "resp_speech");
   assert.ok(node, "resp_speech is missing from ontology/general.json");
@@ -253,3 +329,189 @@ test("resp_speech tap options: only cannot_speak raises it", () => {
     }
   }
 });
+
+// Bleeding: every English bleeding form used to require a severity or
+// quantity word ("heavy", "a lot", "lot of"), so a bare mention of bleeding
+// raised nothing. "सर से खून बह रहा है" already worked because Hindi had an
+// unqualified form (खून बह); English had none.
+
+for (const text of [
+  "bleeding from forehead",
+  "severe bleeding from forehead",
+  "bleeding a lot from my hand",
+  "my head is bleeding",
+  "blood coming from my head",
+  "cut on my head is bleeding",
+]) {
+  test(`bleeding fix: "${text}" -> bleeding, high, isEmergency`, () => {
+    const found = conceptsIn(text);
+    assert.ok(found.includes("bleeding"), `concepts: ${found}`);
+    const flag = evaluate(sessionSaying(text));
+    assert.equal(flag.level, "high");
+    assert.equal(flag.concept, "bleeding");
+    assert.equal(isEmergency(sessionSaying(text)), true);
+  });
+}
+
+// A severity word (severe, unbearable, असहनीय, बहुत तेज़) must never stand
+// alone in the concept set when the phrase also names a symptom whose own
+// form matches independently. When it does, the reason text looks like the
+// system understood the complaint ("Unbearable reported") while the actual
+// symptom -- here bleeding -- went unreported.
+//
+// "terrible", "very bad" and "बहुत ज़्यादा" were checked too: none of them
+// are recognised forms today, so they cannot exhibit this bug, and they were
+// deliberately not added as bare forms -- "very bad"/"terrible" are too
+// generic (a very bad cough, a terrible day) to safely trigger a priority
+// concept on their own.
+
+const SEVERITY_WITH_SYMPTOM: { text: string; severity: string; symptom: string }[] = [
+  { text: "severe bleeding from forehead", severity: "unbearable", symptom: "bleeding" },
+  { text: "unbearable pain in my chest", severity: "unbearable", symptom: "chest_pain" },
+  { text: "पेट में असहनीय दर्द है", severity: "unbearable", symptom: "abdominal_pain" },
+  { text: "बहुत तेज बुखार है", severity: "unbearable", symptom: "fever" },
+];
+
+for (const { text, severity, symptom } of SEVERITY_WITH_SYMPTOM) {
+  test(`severity word does not stand alone: "${text}"`, () => {
+    const found = conceptsIn(text);
+    assert.ok(found.includes(severity), `expected ${severity} in concepts: ${found}`);
+    assert.ok(found.includes(symptom), `${severity} matched but ${symptom} (the actual complaint) did not: ${found}`);
+  });
+}
+
+// Emergency-path audit: isEmergency() gates the redirect to
+// app/emergency/page.tsx for the six EMERGENCY_CONCEPTS. An audit found most
+// of them recognised only clinical-sounding English ("face drooping",
+// "slurred speech") or a narrower Hindi verb form than lay speakers use
+// (गिर पड़ vs गिर पड़ा/पड़ी/पड़े, खून बह vs खून रिस), so a real emergency
+// described in plain words reached the questionnaire instead of the
+// emergency screen. Every phrase below is lay wording a patient or relative
+// would actually use, in both languages, and must reach isEmergency() = true.
+
+const EMERGENCY_AUDIT: { concept: string; en: string[]; hi: string[] }[] = [
+  {
+    concept: "unconscious",
+    en: [
+      "he just collapsed and won't wake up",
+      "she suddenly fainted",
+      "he is not responding to me",
+      "my dad passed out on the floor",
+      "he blacked out for a minute",
+      "she won't wake up",
+    ],
+    hi: [
+      "वह अचानक गिर गया और होश में नहीं आ रहा",
+      "वह अचानक बेहोश हो गई",
+      "वह मुझे जवाब नहीं दे रहा",
+      "मेरे पापा फर्श पर गिर पड़े",
+      "वह एक मिनट के लिए बेहोश हो गया था",
+      "वह जाग नहीं रहा",
+    ],
+  },
+  {
+    concept: "stroke",
+    en: [
+      "his face is drooping on one side",
+      "her speech suddenly became slurred",
+      "his arm suddenly went weak on one side",
+      "her mouth is crooked to one side",
+      "he can't move one side of his body",
+      "she suddenly couldn't talk properly",
+    ],
+    hi: [
+      "उसका मुँह एक तरफ लटक गया है",
+      "उसकी जबान लड़खड़ा रही है",
+      "उसका एक हाथ अचानक सुन्न हो गया",
+      "उसका मुंह एक तरफ टेढ़ा हो गया है",
+      "उसके शरीर के एक तरफ ताकत नहीं है",
+      "उसे लकवा मार गया है",
+    ],
+  },
+  {
+    concept: "choking",
+    en: [
+      "something is stuck in his throat",
+      "she is choking on food",
+      "he can't breathe, something is stuck in his throat",
+      "food got stuck in her throat and she can't talk",
+      "he is gagging and can't breathe",
+      "he choked on a piece of food and can't breathe",
+    ],
+    hi: [
+      "उसके गले में कुछ फंस गया है",
+      "वह खाना खाते समय गला घुट गया",
+      "उसका दम घुट रहा है, कुछ फंसा है",
+      "खाना उसके गले में अटक गया और वह बोल नहीं पा रही",
+      "उसके गले में निवाला अटक गया है",
+      "उसके गले में हड्डी अटक गई है",
+    ],
+  },
+  {
+    concept: "severe_burn",
+    en: [
+      "he got badly burned by hot oil",
+      "her hand is burnt from the stove",
+      "he spilled boiling water on his leg",
+      "she has a bad burn on her arm",
+      "his skin is burnt and blistered",
+      "she got scalded by hot water",
+    ],
+    hi: [
+      "वह गरम तेल से बुरी तरह जल गया",
+      "उसका हाथ चूल्हे से जल गया है",
+      "उसके पैर पर उबलता पानी गिर गया",
+      "उसकी बांह पर गहरी जलन है",
+      "उसकी त्वचा जल गई है और छाले पड़ गए हैं",
+      "वह गरम पानी से झुलस गई",
+    ],
+  },
+  {
+    concept: "coughing_blood",
+    en: [
+      "he coughed up blood this morning",
+      "she is coughing up blood",
+      "there was blood in his cough",
+      "he is spitting blood after coughing",
+      "I saw blood in my cough today",
+      "he has been coughing blood since last night",
+    ],
+    hi: [
+      "उसे आज सुबह खांसी में खून आया",
+      "खांसते समय उसमें से खून निकल रहा है",
+      "खांसने के बाद वह खून थूक रहा है",
+      "खांसते समय खून निकला",
+      "उसे खांसी में खून दिखा",
+      "उसे कल रात से खांसी में खून आ रहा है",
+    ],
+  },
+  {
+    concept: "bleeding",
+    en: [
+      "bleeding from forehead",
+      "severe bleeding from forehead",
+      "bleeding a lot from my hand",
+      "my head is bleeding",
+      "blood coming from my head",
+      "cut on my head is bleeding",
+    ],
+    hi: [
+      "उसके सर से खून बह रहा है",
+      "उसका हाथ कटने से बहुत खून बह रहा है",
+      "चोट से खून निकल रहा है",
+      "उसे बहुत ज़्यादा खून बह रहा है",
+      "पैर से खून रिस रहा है",
+      "घाव से खून नहीं रुक रहा",
+    ],
+  },
+];
+
+for (const { concept, en, hi } of EMERGENCY_AUDIT) {
+  for (const [lang, phrases] of [["en", en], ["hi", hi]] as const) {
+    for (const text of phrases) {
+      test(`emergency audit [${concept}/${lang}]: "${text}" -> isEmergency`, () => {
+        assert.equal(isEmergency(sessionSaying(text)), true, `concepts: ${conceptsIn(text)}`);
+      });
+    }
+  }
+}

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSession, saveSession } from "@/lib/db";
+import { evaluate, isEmergency } from "@/lib/redflag";
 import type { Answer } from "@/lib/types";
 
 export async function POST(
@@ -20,6 +21,16 @@ export async function POST(
     session.answers[existingIndex] = answer;
   } else {
     session.answers.push(answer);
+  }
+
+  // Red flag may only escalate. evaluate() takes the max of this and the
+  // level the session already held, so a changed answer can never lower it.
+  session.redFlag = evaluate(session);
+
+  // An emergency concept stops the questionnaire, so the session goes
+  // straight to physician review instead of waiting on the remaining answers.
+  if (session.status === "in_progress" && isEmergency(session)) {
+    session.status = "pending_review";
   }
 
   saveSession(session);
