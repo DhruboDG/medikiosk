@@ -24,3 +24,261 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* ---------- Kiosk type scale and touch targets ----------
+   Accessibility floor from CLAUDE.md: 18px base body text, 60px minimum
+   touch targets. Values below are the floor, not a suggestion. */
+
+:root {
+  --kiosk-font-base: 18px;
+  --kiosk-font-md: 22px;
+  --kiosk-font-lg: 28px;
+  --kiosk-font-xl: 36px;
+  --kiosk-touch-min: 60px;
+  --kiosk-space: 16px;
+}
+
+/* ---------- Kiosk theme, default and high-contrast ---------- */
+
+.kiosk-shell {
+  --kiosk-bg: #ffffff;
+  --kiosk-fg: #14151a;
+  --kiosk-muted: #52565f;
+  --kiosk-accent: #0b5fff;
+  --kiosk-accent-fg: #ffffff;
+  --kiosk-border: #ccd0d9;
+  --kiosk-surface: #f4f5f7;
+  --kiosk-warning-bg: #fff4e0;
+  --kiosk-warning-fg: #7a4a00;
+  --kiosk-error-bg: #fdecec;
+  --kiosk-error-fg: #8a1f1f;
+  --kiosk-focus: #0b5fff;
+}
+
+.kiosk-shell.kiosk-contrast {
+  --kiosk-bg: #000000;
+  --kiosk-fg: #ffffff;
+  --kiosk-muted: #f2f2f2;
+  --kiosk-accent: #ffd400;
+  --kiosk-accent-fg: #000000;
+  --kiosk-border: #ffffff;
+  --kiosk-surface: #1a1a1a;
+  --kiosk-warning-bg: #3a2a00;
+  --kiosk-warning-fg: #ffd400;
+  --kiosk-error-bg: #3a0000;
+  --kiosk-error-fg: #ff9a9a;
+  --kiosk-focus: #ffd400;
+}
+
+.kiosk-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--kiosk-bg);
+  color: var(--kiosk-fg);
+  font-size: var(--kiosk-font-base);
+  line-height: 1.5;
+}
+
+.kiosk-shell *:focus-visible {
+  outline: 3px solid var(--kiosk-focus);
+  outline-offset: 2px;
+}
+
+.kiosk-topbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--kiosk-space);
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--kiosk-space);
+  border-bottom: 1px solid var(--kiosk-border);
+}
+
+.kiosk-progress {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1 1 220px;
+}
+
+.kiosk-progress-track {
+  flex: 1;
+  height: 12px;
+  border-radius: 999px;
+  background: var(--kiosk-surface);
+  border: 1px solid var(--kiosk-border);
+  overflow: hidden;
+}
+
+.kiosk-progress-fill {
+  height: 100%;
+  background: var(--kiosk-accent);
+  transition: width 0.2s ease;
+}
+
+.kiosk-progress-label {
+  white-space: nowrap;
+  font-size: 1rem;
+}
+
+.kiosk-controls {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.kiosk-toggle,
+.kiosk-listen-again,
+.kiosk-primary-btn,
+.kiosk-secondary-btn,
+.voice-mic-btn {
+  min-height: var(--kiosk-touch-min);
+  min-width: var(--kiosk-touch-min);
+  padding: 12px 20px;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 12px;
+  border: 2px solid var(--kiosk-border);
+  background: var(--kiosk-surface);
+  color: var(--kiosk-fg);
+  cursor: pointer;
+}
+
+.kiosk-primary-btn {
+  background: var(--kiosk-accent);
+  color: var(--kiosk-accent-fg);
+  border-color: var(--kiosk-accent);
+}
+
+.kiosk-primary-btn:disabled,
+.kiosk-secondary-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.kiosk-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--kiosk-space);
+  padding: 24px var(--kiosk-space) 48px;
+  max-width: 760px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.kiosk-prompt {
+  font-size: var(--kiosk-font-xl);
+  line-height: 1.25;
+  font-weight: 700;
+  margin: 0;
+}
+
+.kiosk-source {
+  font-size: 1rem;
+  color: var(--kiosk-muted);
+}
+
+.kiosk-warning {
+  background: var(--kiosk-warning-bg);
+  color: var(--kiosk-warning-fg);
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-size: 1rem;
+}
+
+.kiosk-answer-area {
+  display: flex;
+  flex-direction: column;
+  gap: var(--kiosk-space);
+  margin-top: 8px;
+}
+
+.kiosk-nav-row {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.kiosk-debug {
+  margin-top: 24px;
+  padding: 12px;
+  background: var(--kiosk-surface);
+  border: 1px solid var(--kiosk-border);
+  border-radius: 10px;
+  font-size: 0.9rem;
+  overflow-x: auto;
+}
+
+/* ---------- Voice input ---------- */
+
+.voice-input {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.voice-input-row {
+  display: flex;
+  align-items: stretch;
+  gap: 12px;
+}
+
+.voice-input-field {
+  flex: 1;
+  font-size: 1rem;
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 2px solid var(--kiosk-border);
+  background: var(--kiosk-bg);
+  color: var(--kiosk-fg);
+  min-height: var(--kiosk-touch-min);
+  resize: vertical;
+}
+
+.voice-mic-btn {
+  flex: 0 0 auto;
+  font-size: 1.5rem;
+  line-height: 1;
+  padding: 0;
+  width: var(--kiosk-touch-min);
+  height: var(--kiosk-touch-min);
+  border-radius: 999px;
+}
+
+.voice-mic-btn-active {
+  background: var(--kiosk-accent);
+  color: var(--kiosk-accent-fg);
+  border-color: var(--kiosk-accent);
+}
+
+.voice-interim,
+.voice-readback {
+  font-size: 1rem;
+  color: var(--kiosk-muted);
+  margin: 0;
+}
+
+.voice-readback span {
+  color: var(--kiosk-fg);
+  font-weight: 600;
+}
+
+.voice-warning,
+.voice-error {
+  font-size: 1rem;
+  border-radius: 10px;
+  padding: 12px 16px;
+  margin: 0;
+}
+
+.voice-warning {
+  background: var(--kiosk-warning-bg);
+  color: var(--kiosk-warning-fg);
+}
+
+.voice-error {
+  background: var(--kiosk-error-bg);
+  color: var(--kiosk-error-fg);
+}
