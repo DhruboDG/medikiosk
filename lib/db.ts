@@ -1,0 +1,35 @@
+import Database from "better-sqlite3";
+import path from "path";
+import fs from "fs";
+import type { Session } from "./types";
+
+const dataDir = path.join(process.cwd(), "data");
+if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
+
+const db = new Database(path.join(dataDir, "medikiosk.db"));
+
+db.exec(`
+  CREATE TABLE IF NOT EXISTS sessions (
+    id TEXT PRIMARY KEY,
+    json TEXT NOT NULL
+  )
+`);
+
+export function getSession(id: string): Session | null {
+  const row = db.prepare("SELECT json FROM sessions WHERE id = ?").get(id) as
+    | { json: string }
+    | undefined;
+  if (!row) return null;
+  return JSON.parse(row.json) as Session;
+}
+
+export function saveSession(session: Session): void {
+  db.prepare(
+    "INSERT INTO sessions (id, json) VALUES (?, ?) ON CONFLICT(id) DO UPDATE SET json = excluded.json"
+  ).run(session.id, JSON.stringify(session));
+}
+
+export function listSessions(): Session[] {
+  const rows = db.prepare("SELECT json FROM sessions").all() as { json: string }[];
+  return rows.map((row) => JSON.parse(row.json) as Session);
+}
