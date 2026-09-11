@@ -1,0 +1,553 @@
+[
+  {
+    "id": "cc_open",
+    "section": "chief_complaint",
+    "prompt": { "en": "What brings you here today?", "hi": "आज आप किस तकलीफ से आए हैं?" },
+    "answerType": "text",
+    "concepts": ["chest_pain", "heart_attack", "breathlessness", "coughing_blood", "choking", "cough", "abdominal_pain", "fever"],
+    "next": {
+      "when": [
+        { "answerIn": ["chest_pain", "heart_attack"], "goto": "chest_site" },
+        { "answerIn": ["breathlessness", "coughing_blood", "choking", "cough"], "goto": "resp_onset" },
+        { "answerIn": ["abdominal_pain"], "goto": "abd_site" },
+        { "answerIn": ["fever"], "goto": "fever_duration" }
+      ],
+      "default": "gen_duration"
+    },
+    "fhir": { "resource": "Condition", "path": "code.text" },
+    "source": "PS 3.3 Module C"
+  },
+
+  {
+    "id": "chest_site",
+    "section": "hpi",
+    "prompt": { "en": "Where exactly is the pain?", "hi": "दर्द ठीक किस जगह है?" },
+    "answerType": "single",
+    "options": [
+      { "id": "centre", "value": "centre", "icon": "🎯", "label": { "en": "Centre of the chest", "hi": "छाती के बीच में" } },
+      { "id": "left", "value": "left", "icon": "⬅️", "label": { "en": "Left side", "hi": "बाईं तरफ" } },
+      { "id": "right", "value": "right", "icon": "➡️", "label": { "en": "Right side", "hi": "दाईं तरफ" } },
+      { "id": "all_over", "value": "all_over", "icon": "🔄", "label": { "en": "All over the chest", "hi": "पूरी छाती में" } }
+    ],
+    "next": { "default": "chest_onset" },
+    "source": "SOCRATES"
+  },
+  {
+    "id": "chest_onset",
+    "section": "hpi",
+    "prompt": { "en": "When did the pain start?", "hi": "दर्द कब शुरू हुआ?" },
+    "answerType": "single",
+    "options": [
+      { "id": "lt_1h", "value": "lt_1h", "icon": "⏱️", "label": { "en": "Less than 1 hour ago", "hi": "1 घंटे से कम समय पहले" } },
+      { "id": "lt_24h", "value": "lt_24h", "icon": "🕐", "label": { "en": "Within the last 24 hours", "hi": "पिछले 24 घंटों में" } },
+      { "id": "1_7d", "value": "1_7d", "icon": "📅", "label": { "en": "1 to 7 days ago", "hi": "1 से 7 दिन पहले" } },
+      { "id": "gt_1w", "value": "gt_1w", "icon": "🗓️", "label": { "en": "More than a week ago", "hi": "एक हफ्ते से ज्यादा पहले" } }
+    ],
+    "concepts": ["recent_onset"],
+    "next": { "default": "chest_character" },
+    "source": "SOCRATES"
+  },
+  {
+    "id": "chest_character",
+    "section": "hpi",
+    "prompt": { "en": "What does the pain feel like?", "hi": "दर्द कैसा महसूस होता है?" },
+    "answerType": "single",
+    "options": [
+      { "id": "pressing", "value": "pressing", "icon": "🪨", "label": { "en": "Heavy or pressing", "hi": "भारी या दबाने जैसा" } },
+      { "id": "tight", "value": "tight", "icon": "✊", "label": { "en": "Tight or squeezing", "hi": "कसने या जकड़ने जैसा" } },
+      { "id": "sharp", "value": "sharp", "icon": "🔪", "label": { "en": "Sharp or stabbing", "hi": "चुभने जैसा" } },
+      { "id": "burning", "value": "burning", "icon": "🔥", "label": { "en": "Burning", "hi": "जलन जैसा" } },
+      { "id": "dull", "value": "dull", "icon": "😶", "label": { "en": "Dull ache", "hi": "हल्का भारी दर्द" } }
+    ],
+    "next": { "default": "chest_radiation" },
+    "source": "SOCRATES"
+  },
+  {
+    "id": "chest_radiation",
+    "section": "hpi",
+    "prompt": { "en": "Does the pain spread anywhere else?", "hi": "क्या दर्द कहीं और भी फैलता है?" },
+    "answerType": "single",
+    "options": [
+      { "id": "none", "value": "none", "icon": "📍", "label": { "en": "No, it stays in the chest", "hi": "नहीं, सिर्फ छाती में रहता है" } },
+      { "id": "left_arm", "value": "left_arm", "icon": "💪", "label": { "en": "To the left arm", "hi": "बाएं हाथ में" } },
+      { "id": "jaw_neck", "value": "jaw_neck", "icon": "🦷", "label": { "en": "To the jaw or neck", "hi": "जबड़े या गर्दन में" } },
+      { "id": "back", "value": "back", "icon": "🔙", "label": { "en": "To the back", "hi": "पीठ में" } }
+    ],
+    "concepts": ["radiating_pain"],
+    "next": { "default": "chest_associated" },
+    "source": "SOCRATES"
+  },
+  {
+    "id": "chest_associated",
+    "section": "hpi",
+    "prompt": { "en": "Do you have any of these along with the pain?", "hi": "क्या दर्द के साथ इनमें से कुछ भी है?" },
+    "answerType": "multi",
+    "options": [
+      { "id": "sweating", "value": "sweating", "icon": "💦", "label": { "en": "Sweating", "hi": "पसीना" } },
+      { "id": "breathlessness", "value": "breathlessness", "icon": "😮‍💨", "label": { "en": "Breathlessness", "hi": "सांस फूलना" } },
+      { "id": "nausea", "value": "nausea", "icon": "🤢", "label": { "en": "Nausea or vomiting", "hi": "जी मिचलाना या उल्टी" } },
+      { "id": "palpitations", "value": "palpitations", "icon": "💓", "label": { "en": "Fast or pounding heartbeat", "hi": "दिल की धड़कन तेज होना" } },
+      { "id": "none", "value": "none", "icon": "✅", "label": { "en": "None of these", "hi": "इनमें से कोई नहीं" } }
+    ],
+    "concepts": ["sweating", "breathlessness", "palpitations"],
+    "next": { "default": "chest_timing" },
+    "source": "SOCRATES"
+  },
+  {
+    "id": "chest_timing",
+    "section": "hpi",
+    "prompt": { "en": "Is the pain there all the time?", "hi": "क्या दर्द हर समय रहता है?" },
+    "answerType": "single",
+    "options": [
+      { "id": "constant", "value": "constant", "icon": "⏺️", "label": { "en": "Yes, all the time", "hi": "हां, हर समय" } },
+      { "id": "comes_goes", "value": "comes_goes", "icon": "🔁", "label": { "en": "It comes and goes", "hi": "आता जाता रहता है" } },
+      { "id": "on_effort", "value": "on_effort", "icon": "🏃", "label": { "en": "Only when I walk or work", "hi": "सिर्फ चलने या काम करने पर" } },
+      { "id": "at_rest", "value": "at_rest", "icon": "🛋️", "label": { "en": "Even when resting", "hi": "आराम करते समय भी" } }
+    ],
+    "next": { "default": "chest_factors" },
+    "source": "SOCRATES"
+  },
+  {
+    "id": "chest_factors",
+    "section": "hpi",
+    "prompt": { "en": "What makes the pain worse or better?", "hi": "दर्द किस चीज से बढ़ता या घटता है?" },
+    "answerType": "single",
+    "options": [
+      { "id": "effort", "value": "effort", "icon": "🚶", "label": { "en": "Worse on effort, better with rest", "hi": "मेहनत से बढ़ता है, आराम से घटता है" } },
+      { "id": "food", "value": "food", "icon": "🍛", "label": { "en": "Worse after eating", "hi": "खाना खाने के बाद बढ़ता है" } },
+      { "id": "pressing", "value": "pressing", "icon": "👉", "label": { "en": "Worse when the chest is pressed", "hi": "छाती दबाने पर बढ़ता है" } },
+      { "id": "leaning", "value": "leaning", "icon": "🪑", "label": { "en": "Better when sitting and leaning forward", "hi": "आगे झुककर बैठने से घटता है" } },
+      { "id": "nothing", "value": "nothing", "icon": "➖", "label": { "en": "Nothing changes it", "hi": "किसी चीज से फर्क नहीं पड़ता" } }
+    ],
+    "next": { "default": "chest_severity" },
+    "source": "SOCRATES"
+  },
+  {
+    "id": "chest_severity",
+    "section": "hpi",
+    "prompt": { "en": "How bad is the pain?", "hi": "दर्द कितना तेज है?" },
+    "answerType": "single",
+    "options": [
+      { "id": "mild", "value": "mild", "icon": "🙂", "label": { "en": "Mild", "hi": "हल्का" } },
+      { "id": "moderate", "value": "moderate", "icon": "😐", "label": { "en": "Moderate", "hi": "मध्यम" } },
+      { "id": "severe", "value": "severe", "icon": "😣", "label": { "en": "Severe", "hi": "बहुत तेज" } },
+      { "id": "unbearable", "value": "unbearable", "icon": "😫", "label": { "en": "Unbearable", "hi": "असहनीय" } }
+    ],
+    "concepts": ["unbearable"],
+    "next": { "default": "ph_conditions" },
+    "source": "SOCRATES"
+  },
+
+  {
+    "id": "resp_onset",
+    "section": "hpi",
+    "prompt": { "en": "When did the breathing or cough problem start?", "hi": "सांस या खांसी की तकलीफ कब शुरू हुई?" },
+    "answerType": "single",
+    "options": [
+      { "id": "today", "value": "today", "icon": "⚡", "label": { "en": "Today", "hi": "आज ही" } },
+      { "id": "days", "value": "days", "icon": "📅", "label": { "en": "A few days ago", "hi": "कुछ दिन पहले" } },
+      { "id": "weeks", "value": "weeks", "icon": "🗓️", "label": { "en": "Some weeks ago", "hi": "कुछ हफ्ते पहले" } },
+      { "id": "months", "value": "months", "icon": "📆", "label": { "en": "Months or longer", "hi": "कई महीनों से" } }
+    ],
+    "next": { "default": "resp_speech" },
+    "source": "PS 3.3 Module C"
+  },
+  {
+    "id": "resp_speech",
+    "section": "hpi",
+    "prompt": { "en": "Can you say a full sentence without stopping for breath?", "hi": "क्या आप बिना रुके पूरा वाक्य बोल पा रहे हैं?" },
+    "answerType": "single",
+    "options": [
+      { "id": "full", "value": "full", "icon": "✅", "label": { "en": "Yes, easily", "hi": "हां, आसानी से" } },
+      { "id": "phrases", "value": "phrases", "icon": "🗣️", "label": { "en": "Only short sentences", "hi": "सिर्फ छोटे छोटे वाक्य" } },
+      { "id": "cannot_speak", "value": "cannot_speak", "icon": "⚠️", "label": { "en": "Only a few words at a time", "hi": "एक बार में सिर्फ एक दो शब्द" } }
+    ],
+    "concepts": ["cannot_speak"],
+    "next": { "default": "resp_cough" },
+    "source": "PS 3.3 Module C"
+  },
+  {
+    "id": "resp_cough",
+    "section": "hpi",
+    "prompt": { "en": "Do you have a cough?", "hi": "क्या आपको खांसी है?" },
+    "answerType": "single",
+    "options": [
+      { "id": "none", "value": "none", "icon": "✖️", "label": { "en": "No cough", "hi": "खांसी नहीं है" } },
+      { "id": "dry", "value": "dry", "icon": "🌬️", "label": { "en": "Dry cough", "hi": "सूखी खांसी" } },
+      { "id": "phlegm", "value": "phlegm", "icon": "💧", "label": { "en": "Cough with phlegm", "hi": "बलगम वाली खांसी" } },
+      { "id": "coughing_blood", "value": "coughing_blood", "icon": "🩸", "label": { "en": "Cough with blood", "hi": "खांसी में खून" } }
+    ],
+    "concepts": ["cough", "coughing_blood"],
+    "next": { "default": "ph_conditions" },
+    "source": "PS 3.3 Module C"
+  },
+
+  {
+    "id": "abd_site",
+    "section": "hpi",
+    "prompt": { "en": "Where in the belly is the pain?", "hi": "पेट में दर्द किस जगह है?" },
+    "answerType": "single",
+    "options": [
+      { "id": "upper", "value": "upper", "icon": "🔼", "label": { "en": "Upper middle", "hi": "ऊपर बीच में" } },
+      { "id": "navel", "value": "navel", "icon": "⭕", "label": { "en": "Around the navel", "hi": "नाभि के आसपास" } },
+      { "id": "lower_right", "value": "lower_right", "icon": "↘️", "label": { "en": "Lower right", "hi": "नीचे दाईं तरफ" } },
+      { "id": "lower_left", "value": "lower_left", "icon": "↙️", "label": { "en": "Lower left", "hi": "नीचे बाईं तरफ" } },
+      { "id": "all_over", "value": "all_over", "icon": "🔄", "label": { "en": "All over", "hi": "पूरे पेट में" } }
+    ],
+    "next": { "default": "abd_onset" },
+    "source": "SOCRATES"
+  },
+  {
+    "id": "abd_onset",
+    "section": "hpi",
+    "prompt": { "en": "When did the belly pain start?", "hi": "पेट दर्द कब शुरू हुआ?" },
+    "answerType": "single",
+    "options": [
+      { "id": "today", "value": "today", "icon": "⚡", "label": { "en": "Today", "hi": "आज ही" } },
+      { "id": "days", "value": "days", "icon": "📅", "label": { "en": "A few days ago", "hi": "कुछ दिन पहले" } },
+      { "id": "weeks", "value": "weeks", "icon": "🗓️", "label": { "en": "Some weeks ago", "hi": "कुछ हफ्ते पहले" } },
+      { "id": "months", "value": "months", "icon": "📆", "label": { "en": "Months or longer", "hi": "कई महीनों से" } }
+    ],
+    "next": { "default": "abd_associated" },
+    "source": "SOCRATES"
+  },
+  {
+    "id": "abd_associated",
+    "section": "hpi",
+    "prompt": { "en": "Do you have any of these along with the pain?", "hi": "क्या दर्द के साथ इनमें से कुछ भी है?" },
+    "answerType": "multi",
+    "options": [
+      { "id": "vomiting", "value": "vomiting", "icon": "🤮", "label": { "en": "Vomiting", "hi": "उल्टी" } },
+      { "id": "loose_motions", "value": "loose_motions", "icon": "🚽", "label": { "en": "Loose motions", "hi": "दस्त" } },
+      { "id": "constipation", "value": "constipation", "icon": "🧱", "label": { "en": "Constipation", "hi": "कब्ज" } },
+      { "id": "fever", "value": "fever", "icon": "🌡️", "label": { "en": "Fever", "hi": "बुखार" } },
+      { "id": "none", "value": "none", "icon": "✅", "label": { "en": "None of these", "hi": "इनमें से कोई नहीं" } }
+    ],
+    "next": { "default": "abd_severity" },
+    "source": "SOCRATES"
+  },
+  {
+    "id": "abd_severity",
+    "section": "hpi",
+    "prompt": { "en": "How bad is the pain?", "hi": "दर्द कितना तेज है?" },
+    "answerType": "single",
+    "options": [
+      { "id": "mild", "value": "mild", "icon": "🙂", "label": { "en": "Mild", "hi": "हल्का" } },
+      { "id": "moderate", "value": "moderate", "icon": "😐", "label": { "en": "Moderate", "hi": "मध्यम" } },
+      { "id": "severe", "value": "severe", "icon": "😣", "label": { "en": "Severe", "hi": "बहुत तेज" } },
+      { "id": "unbearable", "value": "unbearable", "icon": "😫", "label": { "en": "Unbearable", "hi": "असहनीय" } }
+    ],
+    "concepts": ["unbearable"],
+    "next": { "default": "ph_conditions" },
+    "source": "SOCRATES"
+  },
+
+  {
+    "id": "fever_duration",
+    "section": "hpi",
+    "prompt": { "en": "How many days have you had fever?", "hi": "बुखार कितने दिन से है?" },
+    "answerType": "single",
+    "options": [
+      { "id": "1_2d", "value": "1_2d", "icon": "1️⃣", "label": { "en": "1 or 2 days", "hi": "1 या 2 दिन" } },
+      { "id": "3_7d", "value": "3_7d", "icon": "📅", "label": { "en": "3 to 7 days", "hi": "3 से 7 दिन" } },
+      { "id": "1_2w", "value": "1_2w", "icon": "🗓️", "label": { "en": "1 to 2 weeks", "hi": "1 से 2 हफ्ते" } },
+      { "id": "gt_2w", "value": "gt_2w", "icon": "📆", "label": { "en": "More than 2 weeks", "hi": "2 हफ्ते से ज्यादा" } }
+    ],
+    "next": { "default": "fever_pattern" },
+    "source": "PS 3.3 Module C"
+  },
+  {
+    "id": "fever_pattern",
+    "section": "hpi",
+    "prompt": { "en": "How does the fever come?", "hi": "बुखार किस तरह आता है?" },
+    "answerType": "single",
+    "options": [
+      { "id": "constant", "value": "constant", "icon": "🌡️", "label": { "en": "It stays all the time", "hi": "हर समय रहता है" } },
+      { "id": "comes_goes", "value": "comes_goes", "icon": "🔁", "label": { "en": "It comes and goes", "hi": "आता जाता रहता है" } },
+      { "id": "shivering", "value": "shivering", "icon": "🥶", "label": { "en": "It comes with shivering", "hi": "कंपकंपी के साथ आता है" } },
+      { "id": "evening", "value": "evening", "icon": "🌙", "label": { "en": "Mostly in the evening or night", "hi": "ज्यादातर शाम या रात को" } }
+    ],
+    "next": { "default": "fever_associated" },
+    "source": "PS 3.3 Module C"
+  },
+  {
+    "id": "fever_associated",
+    "section": "hpi",
+    "prompt": { "en": "Do you have any of these along with the fever?", "hi": "क्या बुखार के साथ इनमें से कुछ भी है?" },
+    "answerType": "multi",
+    "options": [
+      { "id": "headache", "value": "headache", "icon": "🤕", "label": { "en": "Headache", "hi": "सिरदर्द" } },
+      { "id": "body_ache", "value": "body_ache", "icon": "🦴", "label": { "en": "Body ache", "hi": "बदन दर्द" } },
+      { "id": "rash", "value": "rash", "icon": "🔴", "label": { "en": "Rash on the skin", "hi": "त्वचा पर दाने" } },
+      { "id": "burning_urine", "value": "burning_urine", "icon": "🚻", "label": { "en": "Burning while passing urine", "hi": "पेशाब में जलन" } },
+      { "id": "none", "value": "none", "icon": "✅", "label": { "en": "None of these", "hi": "इनमें से कोई नहीं" } }
+    ],
+    "next": { "default": "ph_conditions" },
+    "source": "PS 3.3 Module C"
+  },
+
+  {
+    "id": "gen_duration",
+    "section": "hpi",
+    "prompt": { "en": "How long have you had this problem?", "hi": "यह तकलीफ कब से है?" },
+    "answerType": "single",
+    "options": [
+      { "id": "lt_1w", "value": "lt_1w", "icon": "📅", "label": { "en": "Less than a week", "hi": "एक हफ्ते से कम" } },
+      { "id": "1_4w", "value": "1_4w", "icon": "🗓️", "label": { "en": "1 to 4 weeks", "hi": "1 से 4 हफ्ते" } },
+      { "id": "1_6m", "value": "1_6m", "icon": "📆", "label": { "en": "1 to 6 months", "hi": "1 से 6 महीने" } },
+      { "id": "gt_6m", "value": "gt_6m", "icon": "⏳", "label": { "en": "More than 6 months", "hi": "6 महीने से ज्यादा" } }
+    ],
+    "next": { "default": "gen_trend" },
+    "source": "PS 3.3 Module C"
+  },
+  {
+    "id": "gen_trend",
+    "section": "hpi",
+    "prompt": { "en": "Is it getting better or worse?", "hi": "क्या यह ठीक हो रही है या बढ़ रही है?" },
+    "answerType": "single",
+    "options": [
+      { "id": "better", "value": "better", "icon": "📉", "label": { "en": "Getting better", "hi": "ठीक हो रही है" } },
+      { "id": "same", "value": "same", "icon": "➖", "label": { "en": "About the same", "hi": "पहले जैसी है" } },
+      { "id": "worse", "value": "worse", "icon": "📈", "label": { "en": "Getting worse", "hi": "बढ़ रही है" } }
+    ],
+    "next": { "default": "gen_severity" },
+    "source": "PS 3.3 Module C"
+  },
+  {
+    "id": "gen_severity",
+    "section": "hpi",
+    "prompt": { "en": "How much does it trouble you?", "hi": "यह आपको कितना परेशान करती है?" },
+    "answerType": "single",
+    "options": [
+      { "id": "mild", "value": "mild", "icon": "🙂", "label": { "en": "A little", "hi": "थोड़ा" } },
+      { "id": "moderate", "value": "moderate", "icon": "😐", "label": { "en": "Quite a lot", "hi": "काफी" } },
+      { "id": "unbearable", "value": "unbearable", "icon": "😫", "label": { "en": "Unbearable", "hi": "असहनीय" } }
+    ],
+    "concepts": ["unbearable"],
+    "next": { "default": "ph_conditions" },
+    "source": "PS 3.3 Module C"
+  },
+
+  {
+    "id": "ph_conditions",
+    "section": "past_history",
+    "prompt": { "en": "Has a doctor ever told you that you have any of these?", "hi": "क्या किसी डॉक्टर ने कभी बताया है कि आपको इनमें से कोई बीमारी है?" },
+    "answerType": "multi",
+    "options": [
+      { "id": "diabetes", "value": "diabetes", "icon": "🍬", "label": { "en": "Diabetes (sugar)", "hi": "डायबिटीज (शुगर)" } },
+      { "id": "hypertension", "value": "hypertension", "icon": "🩺", "label": { "en": "High blood pressure", "hi": "हाई बीपी" } },
+      { "id": "heart_disease", "value": "heart_disease", "icon": "❤️", "label": { "en": "Heart disease", "hi": "दिल की बीमारी" } },
+      { "id": "lung_disease", "value": "lung_disease", "icon": "🫁", "label": { "en": "Lung disease", "hi": "फेफड़ों की बीमारी" } },
+      { "id": "thyroid", "value": "thyroid", "icon": "🦋", "label": { "en": "Thyroid problem", "hi": "थायराइड" } },
+      { "id": "tb", "value": "tb", "icon": "🧫", "label": { "en": "TB", "hi": "टीबी" } },
+      { "id": "none", "value": "none", "icon": "✅", "label": { "en": "None of these", "hi": "इनमें से कोई नहीं" } }
+    ],
+    "next": { "default": "ph_surgery" },
+    "fhir": { "resource": "Condition", "path": "code.text" },
+    "source": "PS 3.3 Module C"
+  },
+  {
+    "id": "ph_surgery",
+    "section": "past_history",
+    "prompt": { "en": "Have you ever had an operation?", "hi": "क्या आपका कभी ऑपरेशन हुआ है?" },
+    "answerType": "single",
+    "options": [
+      { "id": "no", "value": "no", "icon": "✖️", "label": { "en": "No", "hi": "नहीं" } },
+      { "id": "once", "value": "once", "icon": "🏥", "label": { "en": "Yes, once", "hi": "हां, एक बार" } },
+      { "id": "more", "value": "more", "icon": "🏥", "label": { "en": "Yes, more than once", "hi": "हां, एक से ज्यादा बार" } },
+      { "id": "unsure", "value": "unsure", "icon": "❓", "label": { "en": "Not sure", "hi": "पता नहीं" } }
+    ],
+    "next": { "default": "ph_admission" },
+    "fhir": { "resource": "Procedure", "path": "code.text" },
+    "source": "PS 3.3 Module C"
+  },
+  {
+    "id": "ph_admission",
+    "section": "past_history",
+    "prompt": { "en": "Have you stayed in hospital in the last year?", "hi": "क्या पिछले एक साल में आप अस्पताल में भर्ती हुए हैं?" },
+    "answerType": "single",
+    "options": [
+      { "id": "no", "value": "no", "icon": "✖️", "label": { "en": "No", "hi": "नहीं" } },
+      { "id": "once", "value": "once", "icon": "🛏️", "label": { "en": "Yes, once", "hi": "हां, एक बार" } },
+      { "id": "more", "value": "more", "icon": "🛏️", "label": { "en": "Yes, more than once", "hi": "हां, एक से ज्यादा बार" } },
+      { "id": "unsure", "value": "unsure", "icon": "❓", "label": { "en": "Not sure", "hi": "पता नहीं" } }
+    ],
+    "next": { "default": "da_meds" },
+    "source": "PS 3.3 Module C"
+  },
+
+  {
+    "id": "da_meds",
+    "section": "drug_allergy",
+    "prompt": { "en": "Do you take any medicines regularly?", "hi": "क्या आप रोज कोई दवा लेते हैं?" },
+    "answerType": "single",
+    "options": [
+      { "id": "none", "value": "none", "icon": "✖️", "label": { "en": "No", "hi": "नहीं" } },
+      { "id": "few", "value": "few", "icon": "💊", "label": { "en": "Yes, 1 or 2 medicines", "hi": "हां, 1 या 2 दवाएं" } },
+      { "id": "many", "value": "many", "icon": "💊", "label": { "en": "Yes, 3 or more", "hi": "हां, 3 या उससे ज्यादा" } },
+      { "id": "unsure", "value": "unsure", "icon": "❓", "label": { "en": "Not sure", "hi": "पता नहीं" } }
+    ],
+    "next": {
+      "when": [{ "answerIn": ["few", "many"], "goto": "da_meds_list" }],
+      "default": "da_allergy"
+    },
+    "source": "PS 3.3 Module C"
+  },
+  {
+    "id": "da_meds_list",
+    "section": "drug_allergy",
+    "prompt": { "en": "Please say or type the names of your medicines", "hi": "कृपया अपनी दवाओं के नाम बोलिए या लिखिए" },
+    "answerType": "text",
+    "next": { "default": "da_allergy" },
+    "fhir": { "resource": "MedicationStatement", "path": "medicationCodeableConcept.text" },
+    "source": "PS 3.3 Module C"
+  },
+  {
+    "id": "da_allergy",
+    "section": "drug_allergy",
+    "prompt": { "en": "Are you allergic to anything?", "hi": "क्या आपको किसी चीज से एलर्जी है?" },
+    "answerType": "single",
+    "options": [
+      { "id": "none", "value": "none", "icon": "✅", "label": { "en": "No known allergy", "hi": "कोई एलर्जी नहीं" } },
+      { "id": "medicine", "value": "medicine", "icon": "💊", "label": { "en": "Yes, to a medicine", "hi": "हां, किसी दवा से" } },
+      { "id": "food", "value": "food", "icon": "🥜", "label": { "en": "Yes, to a food", "hi": "हां, किसी खाने की चीज से" } },
+      { "id": "other", "value": "other", "icon": "🌼", "label": { "en": "Yes, to something else", "hi": "हां, किसी और चीज से" } },
+      { "id": "unsure", "value": "unsure", "icon": "❓", "label": { "en": "Not sure", "hi": "पता नहीं" } }
+    ],
+    "next": {
+      "when": [{ "answerIn": ["medicine", "food", "other"], "goto": "da_allergy_detail" }],
+      "default": "fh_conditions"
+    },
+    "fhir": { "resource": "AllergyIntolerance", "path": "code.text" },
+    "source": "PS 3.3 Module C"
+  },
+  {
+    "id": "da_allergy_detail",
+    "section": "drug_allergy",
+    "prompt": { "en": "What are you allergic to, and what happens?", "hi": "किस चीज से एलर्जी है और उससे क्या होता है?" },
+    "answerType": "text",
+    "next": { "default": "fh_conditions" },
+    "fhir": { "resource": "AllergyIntolerance", "path": "reaction.description" },
+    "source": "PS 3.3 Module C"
+  },
+
+  {
+    "id": "fh_conditions",
+    "section": "family",
+    "prompt": { "en": "Does anyone in your family have any of these?", "hi": "क्या आपके परिवार में किसी को इनमें से कोई बीमारी है?" },
+    "answerType": "multi",
+    "options": [
+      { "id": "diabetes", "value": "diabetes", "icon": "🍬", "label": { "en": "Diabetes (sugar)", "hi": "डायबिटीज (शुगर)" } },
+      { "id": "hypertension", "value": "hypertension", "icon": "🩺", "label": { "en": "High blood pressure", "hi": "हाई बीपी" } },
+      { "id": "heart_disease", "value": "heart_disease", "icon": "❤️", "label": { "en": "Heart disease", "hi": "दिल की बीमारी" } },
+      { "id": "cancer", "value": "cancer", "icon": "🎗️", "label": { "en": "Cancer", "hi": "कैंसर" } },
+      { "id": "none", "value": "none", "icon": "✅", "label": { "en": "None of these", "hi": "इनमें से कोई नहीं" } },
+      { "id": "unsure", "value": "unsure", "icon": "❓", "label": { "en": "Not sure", "hi": "पता नहीं" } }
+    ],
+    "next": { "default": "fh_similar" },
+    "fhir": { "resource": "FamilyMemberHistory", "path": "condition.code.text" },
+    "source": "PS 3.3 Module C"
+  },
+  {
+    "id": "fh_similar",
+    "section": "family",
+    "prompt": { "en": "Does anyone in your family have a problem like yours?", "hi": "क्या परिवार में किसी को आप जैसी तकलीफ है?" },
+    "answerType": "single",
+    "options": [
+      { "id": "no", "value": "no", "icon": "✖️", "label": { "en": "No", "hi": "नहीं" } },
+      { "id": "yes", "value": "yes", "icon": "👨‍👩‍👧", "label": { "en": "Yes", "hi": "हां" } },
+      { "id": "unsure", "value": "unsure", "icon": "❓", "label": { "en": "Not sure", "hi": "पता नहीं" } }
+    ],
+    "next": { "default": "pers_tobacco" },
+    "source": "PS 3.3 Module C"
+  },
+
+  {
+    "id": "pers_tobacco",
+    "section": "personal",
+    "prompt": { "en": "Do you smoke or use tobacco?", "hi": "क्या आप धूम्रपान करते हैं या तंबाकू लेते हैं?" },
+    "answerType": "single",
+    "options": [
+      { "id": "never", "value": "never", "icon": "🚭", "label": { "en": "Never", "hi": "कभी नहीं" } },
+      { "id": "smoke", "value": "smoke", "icon": "🚬", "label": { "en": "Bidi or cigarette", "hi": "बीड़ी या सिगरेट" } },
+      { "id": "chew", "value": "chew", "icon": "🌿", "label": { "en": "Gutkha, khaini or chewing tobacco", "hi": "गुटखा, खैनी या तंबाकू" } },
+      { "id": "quit", "value": "quit", "icon": "⏹️", "label": { "en": "I used to, now stopped", "hi": "पहले लेते थे, अब छोड़ दिया" } }
+    ],
+    "next": { "default": "pers_alcohol" },
+    "fhir": { "resource": "Observation", "path": "valueString" },
+    "source": "PS 3.3 Module C"
+  },
+  {
+    "id": "pers_alcohol",
+    "section": "personal",
+    "prompt": { "en": "Do you drink alcohol?", "hi": "क्या आप शराब पीते हैं?" },
+    "answerType": "single",
+    "options": [
+      { "id": "never", "value": "never", "icon": "🚫", "label": { "en": "Never", "hi": "कभी नहीं" } },
+      { "id": "sometimes", "value": "sometimes", "icon": "🍺", "label": { "en": "Sometimes", "hi": "कभी कभी" } },
+      { "id": "daily", "value": "daily", "icon": "🥃", "label": { "en": "Most days", "hi": "लगभग रोज" } },
+      { "id": "quit", "value": "quit", "icon": "⏹️", "label": { "en": "I used to, now stopped", "hi": "पहले पीते थे, अब छोड़ दिया" } }
+    ],
+    "next": { "default": "pers_diet" },
+    "fhir": { "resource": "Observation", "path": "valueString" },
+    "source": "PS 3.3 Module C"
+  },
+  {
+    "id": "pers_diet",
+    "section": "personal",
+    "prompt": { "en": "What do you usually eat?", "hi": "आप आमतौर पर क्या खाते हैं?" },
+    "answerType": "single",
+    "options": [
+      { "id": "veg", "value": "veg", "icon": "🥦", "label": { "en": "Vegetarian", "hi": "शाकाहारी" } },
+      { "id": "egg", "value": "egg", "icon": "🥚", "label": { "en": "Vegetarian with eggs", "hi": "शाकाहारी और अंडा" } },
+      { "id": "nonveg", "value": "nonveg", "icon": "🍗", "label": { "en": "Non-vegetarian", "hi": "मांसाहारी" } }
+    ],
+    "next": { "default": "pers_sleep" },
+    "source": "PS 3.3 Module C"
+  },
+  {
+    "id": "pers_sleep",
+    "section": "personal",
+    "prompt": { "en": "How do you sleep?", "hi": "आपकी नींद कैसी है?" },
+    "answerType": "single",
+    "options": [
+      { "id": "good", "value": "good", "icon": "😴", "label": { "en": "I sleep well", "hi": "अच्छी नींद आती है" } },
+      { "id": "hard_to_fall", "value": "hard_to_fall", "icon": "🌙", "label": { "en": "Hard to fall asleep", "hi": "नींद आने में देर लगती है" } },
+      { "id": "wakes", "value": "wakes", "icon": "🔔", "label": { "en": "I wake up often", "hi": "बार बार नींद खुलती है" } },
+      { "id": "too_much", "value": "too_much", "icon": "🛌", "label": { "en": "I sleep too much", "hi": "बहुत ज्यादा नींद आती है" } }
+    ],
+    "next": { "default": "ros_general" },
+    "source": "PS 3.3 Module C"
+  },
+
+  {
+    "id": "ros_general",
+    "section": "ros",
+    "prompt": { "en": "In the last month, have you noticed any of these?", "hi": "पिछले एक महीने में क्या आपने इनमें से कुछ महसूस किया है?" },
+    "answerType": "multi",
+    "options": [
+      { "id": "weight_loss", "value": "weight_loss", "icon": "⚖️", "label": { "en": "Weight loss", "hi": "वजन कम होना" } },
+      { "id": "tiredness", "value": "tiredness", "icon": "🥱", "label": { "en": "Feeling tired", "hi": "थकान" } },
+      { "id": "appetite", "value": "appetite", "icon": "🍽️", "label": { "en": "Less appetite", "hi": "भूख कम लगना" } },
+      { "id": "feet_swelling", "value": "feet_swelling", "icon": "🦶", "label": { "en": "Swelling of the feet", "hi": "पैरों में सूजन" } },
+      { "id": "none", "value": "none", "icon": "✅", "label": { "en": "None of these", "hi": "इनमें से कोई नहीं" } }
+    ],
+    "next": { "default": "ros_systems" },
+    "source": "PS 3.3 Module C"
+  },
+  {
+    "id": "ros_systems",
+    "section": "ros",
+    "prompt": { "en": "Do you have any of these problems?", "hi": "क्या आपको इनमें से कोई तकलीफ है?" },
+    "answerType": "multi",
+    "options": [
+      { "id": "headache", "value": "headache", "icon": "🤕", "label": { "en": "Headache", "hi": "सिरदर्द" } },
+      { "id": "burning_urine", "value": "burning_urine", "icon": "🚻", "label": { "en": "Burning while passing urine", "hi": "पेशाब में जलन" } },
+      { "id": "bowel", "value": "bowel", "icon": "🚽", "label": { "en": "Change in bowel habit", "hi": "शौच की आदत में बदलाव" } },
+      { "id": "joint_pain", "value": "joint_pain", "icon": "🦵", "label": { "en": "Joint pain", "hi": "जोड़ों में दर्द" } },
+      { "id": "rash", "value": "rash", "icon": "🔴", "label": { "en": "Skin rash", "hi": "त्वचा पर दाने" } },
+      { "id": "none", "value": "none", "icon": "✅", "label": { "en": "None of these", "hi": "इनमें से कोई नहीं" } }
+    ],
+    "source": "PS 3.3 Module C"
+  }
+]
