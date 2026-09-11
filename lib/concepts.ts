@@ -38,16 +38,28 @@ export function normalizeText(s: unknown): string {
     .trim();
 }
 
+/* Hour counts that still mean onset within the last day ("since 3 hours", "3 घंटे से"). */
+const UNDER_24 = Array.from({ length: 23 }, (_, i) => i + 1);
+
 export const CONCEPTS: Record<string, Concept> = {
   chest_pain: { label: { en: "Chest pain", hi: "सीने में दर्द" }, forms: [
     "chest pain","pain in chest","pain in my chest","chest pressure","pressure in chest","tightness in chest",
     "chest discomfort","angina","chest tightness","heaviness in chest","chest hurt",
+    "chest feels heavy","chest feels tight","chest is heavy","chest is tight","heavy chest","tight chest",
+    "chest heaviness","chest ache","chest squeezing","squeezing in my chest","weight on my chest","weight on chest",
+    "pressure on my chest","pressure on chest","pressure in my chest","heaviness in my chest","tightness in my chest",
+    "discomfort in my chest",
     "सीने में दर्द","सीने मे दर्द","छाती में दर्द","छाती दर्द","सीने में जकड़न","सीने में दबाव","सीने में भारीपन",
-    "seene mein dard","seene me dard","sine mein dard","chhati mein dard","chati dard","chest mein dard"
+    "सीने में जकड़","छाती में जकड़","छाती जकड़","सीना जकड़","छाती में भारी","छाती भारी","सीना भारी",
+    "छाती में दबाव","सीने पर दबाव","छाती पर दबाव","सीने पर बोझ","छाती पर बोझ",
+    "seene mein dard","seene me dard","sine mein dard","chhati mein dard","chati dard","chest mein dard",
+    "chhati mein jakdan","seene mein jakdan","chhati bhari","seena bhari"
   ]},
   breathlessness: { label: { en: "Breathlessness", hi: "साँस की तकलीफ" }, forms: [
     "shortness of breath","short of breath","difficulty breathing","difficulty in breathing",
     "breathless","cannot breathe","can not breathe","trouble breathing","wheezing","suffocating","asthma",
+    "out of breath","gasping","breathing difficulty","breathing problem","breathing trouble",
+    "hard to breathe","struggling to breathe","struggle to breathe",
     "सांस","सांस लेने में","सांस फूल","दम घुट","सांस की तकलीफ","सांस नहीं आ","दमा","हांफ",
     "saans","sans","saans lene mein","saans phool","dam ghut","haanf","damaa"
   ]},
@@ -113,6 +125,8 @@ export const CONCEPTS: Record<string, Concept> = {
      ("रुक रुक कर दर्द"). The forms below name the speech limit itself. */
   cannot_speak: { label: { en: "Cannot complete a sentence", hi: "पूरा वाक्य नहीं बोल पा रहे" }, forms: [
     "cannot complete a sentence","cant complete a sentence","cannot finish a sentence",
+    "cant finish a sentence","can not finish a sentence","can not complete a sentence",
+    "unable to finish a sentence","unable to complete a sentence",
     "only a few words","only few words","one word at a time",
     "पूरा वाक्य नहीं","एक दो शब्द","रुक रुक कर बोल","नहीं बोल पा","बोल नहीं पा",
     "nahi bol pa","bol nahi pa","ek do shabd"
@@ -135,10 +149,21 @@ export const CONCEPTS: Record<string, Concept> = {
     "बाएं हाथ","बायें हाथ","बाएं बाजू","हाथ में दर्द","जबड़",
     "baen haath","baye haath","jabda","jabde"
   ]},
+  /* Each form names a starting point. A bare "hour", "घंट" or "मिनट" also
+     matched "every few hours" and "48 hours", which mean the opposite. */
   recent_onset: { label: { en: "Began within 24 hours", hi: "24 घंटे के अंदर शुरू" }, forms: [
-    "hour","minutes ago","few minutes","just now","this morning","since morning","last night","since today",
-    "घंट","मिनट","सुबह से","आज सुबह","रात से","कल रात","अभी अभी","थोड़ी देर पहले","कुछ देर पहले",
-    "ghant","subah se","aaj subah","raat se","kal raat","abhi abhi"
+    "minutes ago","minute ago","just now","an hour ago","hour ago","hours ago",
+    "since an hour","since one hour","since two hours","since few hours","since a few hours",
+    "for an hour","last few hours","past few hours","last 24 hours","past 24 hours",
+    "this morning","since morning","since this morning","today morning","last night","since last night",
+    "since yesterday","since today",
+    ...UNDER_24.map((n) => `since ${n} hour`),
+    "एक घंटे से","आधे घंटे से","दो घंटे से","तीन घंटे से","कुछ घंटे से","कुछ घंटों से","घंटे भर से",
+    "घंटे पहले","घंटा पहले","घंटों पहले","पिछले 24 घंट","मिनट पहले","मिनट से",
+    ...UNDER_24.map((n) => `${n} घंटे से`),
+    "सुबह से","आज सुबह","रात से","कल रात","कल से","आज से","अभी अभी","थोड़ी देर पहले","कुछ देर पहले",
+    "ek ghante se","do ghante se","kuch ghante se","ghante pehle","ghanta pehle","minute pehle",
+    "subah se","aaj subah","raat se","kal raat","kal se","abhi abhi"
   ]}
 };
 
@@ -184,6 +209,12 @@ const ABILITIES: Ability[] = [
   { forms: ["रुक", "थम", "थमता", "थमती", "थमा", "बंद", "ruk", "tham", "band", "stop", "control"],
     implies: { concept: "bleeding", cue: ["blood", "bleed", "खून", "रक्त", "khoon", "khun", "rakt"] } },
   { forms: ["breath"], implies: { concept: "breathlessness" } },
+  /* Idioms that only mean breathlessness when negated ("can't catch her
+     breath", "not getting enough air"). As concept forms, the negator in front
+     of them would read as a denial. */
+  { forms: ["catch my breath", "catch her breath", "catch his breath", "catch their breath", "catch the breath",
+            "catch breath", "get enough air", "getting enough air"],
+    implies: { concept: "breathlessness" } },
   { forms: ["बोल", "bol", "speak", "talk"] },
   { forms: ["पा", "पाता", "पाती", "पाते", "पाया", "पाई", "सकता", "सकती", "सकते", "सका",
             "pa", "paa", "pata", "pati", "sakta", "sakti", "able"] },
