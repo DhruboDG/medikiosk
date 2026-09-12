@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { randomUUID } from "crypto";
-import { saveSession } from "@/lib/db";
+import { nextToken, saveSession } from "@/lib/db";
 import type { Session } from "@/lib/types";
 
 export async function POST(request: NextRequest) {
@@ -18,6 +18,7 @@ export async function POST(request: NextRequest) {
     redFlag: { level: "none", concept: null, reason: "" },
     status: "in_progress",
     createdAt: new Date().toISOString(),
+    token: nextToken(),
   };
 
   saveSession(session);

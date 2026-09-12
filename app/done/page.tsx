@@ -29,15 +29,11 @@ export default function DonePage() {
   useEffect(() => {
     if (!sessionId) return;
     let cancelled = false;
-    fetch("/api/queue")
+    fetch(`/api/session/${sessionId}`)
       .then((res) => (res.ok ? res.json() : Promise.reject(new Error("bad status"))))
-      .then((data: { sessions: Session[] }) => {
+      .then((data: { session: Session }) => {
         if (cancelled) return;
-        const ordered = [...data.sessions].sort(
-          (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
-        );
-        const index = ordered.findIndex((s) => s.id === sessionId);
-        setTokenNumber(index >= 0 ? index + 1 : null);
+        setTokenNumber(data.session.token ?? null);
       })
       .catch(() => setTokenNumber(null));
     return () => {

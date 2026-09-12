@@ -54,4 +54,5 @@ export interface Session {
   redFlag: RedFlag; summary?: Summary; fhirBundle?: unknown;
   status: "in_progress" | "pending_review" | "confirmed";
   createdAt: string;
+  token?: number;
 }
