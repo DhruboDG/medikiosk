@@ -1,7 +1,10 @@
 // Server-side only. GEMINI_API_KEY must never reach client code — this file
 // is imported only from app/api/** route handlers.
 
-const GEMINI_MODEL = "gemini-2.0-flash";
+// A "flash-lite" model, not the reasoning-heavy "flash": those spend well
+// over 1000 hidden thinking tokens per call, which blows past TIMEOUT_MS on
+// a real clinical prompt and falls back to the template every time.
+const GEMINI_MODEL = "gemini-3.5-flash-lite";
 const TIMEOUT_MS = 8000;
 
 export async function callGemini(prompt: string, images?: string[]): Promise<string | null> {

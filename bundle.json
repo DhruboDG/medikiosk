@@ -1,0 +1,255 @@
+﻿{
+    "resourceType":  "Bundle",
+    "id":  "bundle-27870141-42c7-4115-838c-65dd0fdead31",
+    "type":  "document",
+    "timestamp":  "2026-09-12T15:59:30.878Z",
+    "entry":  [
+                  {
+                      "fullUrl":  "urn:uuid:composition-27870141-42c7-4115-838c-65dd0fdead31",
+                      "resource":  {
+                                       "resourceType":  "Composition",
+                                       "id":  "composition-27870141-42c7-4115-838c-65dd0fdead31",
+                                       "status":  "preliminary",
+                                       "type":  {
+                                                    "text":  "Pre-consultation intake summary"
+                                                },
+                                       "title":  "Pre-Consultation Patient History",
+                                       "subject":  {
+                                                       "reference":  "Patient/patient-27870141-42c7-4115-838c-65dd0fdead31"
+                                                   },
+                                       "encounter":  {
+                                                         "reference":  "Encounter/encounter-27870141-42c7-4115-838c-65dd0fdead31"
+                                                     },
+                                       "date":  "2026-09-12T15:53:49.809Z",
+                                       "author":  [
+                                                      {
+                                                          "display":  "MediKiosk intake (patient self-report, not clinically validated)"
+                                                      }
+                                                  ],
+                                       "section":  [
+                                                       {
+                                                           "title":  "Chief Complaint",
+                                                           "text":  {
+                                                                        "status":  "generated",
+                                                                        "div":  "\u003cdiv xmlns=\"http://www.w3.org/1999/xhtml\"\u003eThe 52-year-old male presents with chest pain that started this morning, a few hours ago.\u003c/div\u003e"
+                                                                    },
+                                                           "entry":  [
+                                                                         {
+                                                                             "reference":  "Condition/condition-cc-27870141-42c7-4115-838c-65dd0fdead31"
+                                                                         }
+                                                                     ]
+                                                       },
+                                                       {
+                                                           "title":  "History of Present Illness",
+                                                           "text":  {
+                                                                        "status":  "generated",
+                                                                        "div":  "\u003cdiv xmlns=\"http://www.w3.org/1999/xhtml\"\u003eThe patient reports severe, constant pain located in the centre of the chest that started less than 1 hour ago and feels heavy or pressing. The pain spreads to the left arm and is accompanied by sweating and breathlessness. It is worse on effort and better with rest.\u003c/div\u003e"
+                                                                    }
+                                                       },
+                                                       {
+                                                           "title":  "Past Medical and Surgical History",
+                                                           "text":  {
+                                                                        "status":  "generated",
+                                                                        "div":  "\u003cdiv xmlns=\"http://www.w3.org/1999/xhtml\"\u003eThe patient has a past medical history of high blood pressure and diabetes. He has never had an operation and has not stayed in the hospital in the last year.\u003c/div\u003e"
+                                                                    },
+                                                           "entry":  [
+                                                                         {
+                                                                             "reference":  "Condition/condition-ph-27870141-42c7-4115-838c-65dd0fdead31-0"
+                                                                         },
+                                                                         {
+                                                                             "reference":  "Condition/condition-ph-27870141-42c7-4115-838c-65dd0fdead31-1"
+                                                                         }
+                                                                     ]
+                                                       },
+                                                       {
+                                                           "title":  "Drug and Allergy History",
+                                                           "text":  {
+                                                                        "status":  "generated",
+                                                                        "div":  "\u003cdiv xmlns=\"http://www.w3.org/1999/xhtml\"\u003eThe patient takes 1 or 2 medicines regularly, specifically Metformin 500mg and Amlodipine 5mg. He is allergic to penicillin, which causes a skin rash.\u003c/div\u003e"
+                                                                    },
+                                                           "entry":  [
+                                                                         {
+                                                                             "reference":  "MedicationStatement/medication-27870141-42c7-4115-838c-65dd0fdead31-0"
+                                                                         },
+                                                                         {
+                                                                             "reference":  "MedicationStatement/medication-27870141-42c7-4115-838c-65dd0fdead31-1"
+                                                                         },
+                                                                         {
+                                                                             "reference":  "AllergyIntolerance/allergy-27870141-42c7-4115-838c-65dd0fdead31"
+                                                                         }
+                                                                     ]
+                                                       },
+                                                       {
+                                                           "title":  "Family History",
+                                                           "text":  {
+                                                                        "status":  "generated",
+                                                                        "div":  "\u003cdiv xmlns=\"http://www.w3.org/1999/xhtml\"\u003eThere is a family history of heart disease, and someone in the family has a problem like the patient\u0027s.\u003c/div\u003e"
+                                                                    }
+                                                       },
+                                                       {
+                                                           "title":  "Personal History",
+                                                           "text":  {
+                                                                        "status":  "generated",
+                                                                        "div":  "\u003cdiv xmlns=\"http://www.w3.org/1999/xhtml\"\u003eThe patient smokes or uses tobacco (bidi or cigarette), drinks alcohol sometimes, eats a non-vegetarian diet, and sleeps well.\u003c/div\u003e"
+                                                                    }
+                                                       },
+                                                       {
+                                                           "title":  "Review of Systems",
+                                                           "text":  {
+                                                                        "status":  "generated",
+                                                                        "div":  "\u003cdiv xmlns=\"http://www.w3.org/1999/xhtml\"\u003eIn the last month, the patient has noticed feeling tired, and reports having joint pain.\u003c/div\u003e"
+                                                                    }
+                                                       },
+                                                       {
+                                                           "title":  "Prior Investigations",
+                                                           "text":  {
+                                                                        "status":  "generated",
+                                                                        "div":  "\u003cdiv xmlns=\"http://www.w3.org/1999/xhtml\"\u003eNo prior investigation questions were asked and no documents were captured in this session.\u003c/div\u003e"
+                                                                    }
+                                                       }
+                                                   ]
+                                   }
+                  },
+                  {
+                      "fullUrl":  "urn:uuid:patient-27870141-42c7-4115-838c-65dd0fdead31",
+                      "resource":  {
+                                       "resourceType":  "Patient",
+                                       "id":  "patient-27870141-42c7-4115-838c-65dd0fdead31",
+                                       "name":  [
+                                                    {
+                                                        "text":  "Test Patient A"
+                                                    }
+                                                ],
+                                       "gender":  "male",
+                                       "extension":  [
+                                                         {
+                                                             "url":  "https://medikiosk.local/fhir/StructureDefinition/reported-age",
+                                                             "valueInteger":  52
+                                                         }
+                                                     ]
+                                   }
+                  },
+                  {
+                      "fullUrl":  "urn:uuid:encounter-27870141-42c7-4115-838c-65dd0fdead31",
+                      "resource":  {
+                                       "resourceType":  "Encounter",
+                                       "id":  "encounter-27870141-42c7-4115-838c-65dd0fdead31",
+                                       "status":  "planned",
+                                       "class":  {
+                                                     "system":  "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+                                                     "code":  "AMB",
+                                                     "display":  "ambulatory"
+                                                 },
+                                       "subject":  {
+                                                       "reference":  "Patient/patient-27870141-42c7-4115-838c-65dd0fdead31"
+                                                   },
+                                       "period":  {
+                                                      "start":  "2026-09-12T15:53:49.809Z"
+                                                  }
+                                   }
+                  },
+                  {
+                      "fullUrl":  "urn:uuid:condition-cc-27870141-42c7-4115-838c-65dd0fdead31",
+                      "resource":  {
+                                       "resourceType":  "Condition",
+                                       "id":  "condition-cc-27870141-42c7-4115-838c-65dd0fdead31",
+                                       "subject":  {
+                                                       "reference":  "Patient/patient-27870141-42c7-4115-838c-65dd0fdead31"
+                                                   },
+                                       "encounter":  {
+                                                         "reference":  "Encounter/encounter-27870141-42c7-4115-838c-65dd0fdead31"
+                                                     },
+                                       "category":  [
+                                                        {
+                                                            "text":  "Chief complaint"
+                                                        }
+                                                    ],
+                                       "code":  {
+                                                    "text":  "I have chest pain since this morning, it started a few hours ago"
+                                                }
+                                   }
+                  },
+                  {
+                      "fullUrl":  "urn:uuid:condition-ph-27870141-42c7-4115-838c-65dd0fdead31-0",
+                      "resource":  {
+                                       "resourceType":  "Condition",
+                                       "id":  "condition-ph-27870141-42c7-4115-838c-65dd0fdead31-0",
+                                       "subject":  {
+                                                       "reference":  "Patient/patient-27870141-42c7-4115-838c-65dd0fdead31"
+                                                   },
+                                       "category":  [
+                                                        {
+                                                            "text":  "Past medical history"
+                                                        }
+                                                    ],
+                                       "code":  {
+                                                    "text":  "High blood pressure"
+                                                }
+                                   }
+                  },
+                  {
+                      "fullUrl":  "urn:uuid:condition-ph-27870141-42c7-4115-838c-65dd0fdead31-1",
+                      "resource":  {
+                                       "resourceType":  "Condition",
+                                       "id":  "condition-ph-27870141-42c7-4115-838c-65dd0fdead31-1",
+                                       "subject":  {
+                                                       "reference":  "Patient/patient-27870141-42c7-4115-838c-65dd0fdead31"
+                                                   },
+                                       "category":  [
+                                                        {
+                                                            "text":  "Past medical history"
+                                                        }
+                                                    ],
+                                       "code":  {
+                                                    "text":  "Diabetes (sugar)"
+                                                }
+                                   }
+                  },
+                  {
+                      "fullUrl":  "urn:uuid:medication-27870141-42c7-4115-838c-65dd0fdead31-0",
+                      "resource":  {
+                                       "resourceType":  "MedicationStatement",
+                                       "id":  "medication-27870141-42c7-4115-838c-65dd0fdead31-0",
+                                       "status":  "unknown",
+                                       "subject":  {
+                                                       "reference":  "Patient/patient-27870141-42c7-4115-838c-65dd0fdead31"
+                                                   },
+                                       "medicationCodeableConcept":  {
+                                                                         "text":  "Metformin 500mg"
+                                                                     }
+                                   }
+                  },
+                  {
+                      "fullUrl":  "urn:uuid:medication-27870141-42c7-4115-838c-65dd0fdead31-1",
+                      "resource":  {
+                                       "resourceType":  "MedicationStatement",
+                                       "id":  "medication-27870141-42c7-4115-838c-65dd0fdead31-1",
+                                       "status":  "unknown",
+                                       "subject":  {
+                                                       "reference":  "Patient/patient-27870141-42c7-4115-838c-65dd0fdead31"
+                                                   },
+                                       "medicationCodeableConcept":  {
+                                                                         "text":  "Amlodipine 5mg"
+                                                                     }
+                                   }
+                  },
+                  {
+                      "fullUrl":  "urn:uuid:allergy-27870141-42c7-4115-838c-65dd0fdead31",
+                      "resource":  {
+                                       "resourceType":  "AllergyIntolerance",
+                                       "id":  "allergy-27870141-42c7-4115-838c-65dd0fdead31",
+                                       "patient":  {
+                                                       "reference":  "Patient/patient-27870141-42c7-4115-838c-65dd0fdead31"
+                                                   },
+                                       "code":  {
+                                                    "text":  "Yes, to a medicine"
+                                                },
+                                       "reaction":  [
+                                                        {
+                                                            "description":  "Penicillin causes a skin rash"
+                                                        }
+                                                    ]
+                                   }
+                  }
+              ]
+}

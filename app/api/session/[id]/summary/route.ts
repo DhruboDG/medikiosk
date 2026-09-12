@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSession, saveSession } from "@/lib/db";
+import { generateSummary } from "@/lib/summary";
+import { buildFhirBundle } from "@/lib/fhir";
 
 export async function POST(
   request: NextRequest,
@@ -12,7 +14,8 @@ export async function POST(
     return NextResponse.json({ error: "not found" }, { status: 404 });
   }
 
-  // Summary and FHIR bundle generation is added in a later packet.
+  session.summary = await generateSummary(session);
+  session.fhirBundle = buildFhirBundle(session, session.summary);
   session.status = "pending_review";
   saveSession(session);
   return NextResponse.json({ session });

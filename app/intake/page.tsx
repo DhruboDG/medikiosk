@@ -125,8 +125,21 @@ export default function IntakePage() {
   }, []);
 
   useEffect(() => {
-    if (isFinishing) router.push("/done");
-  }, [isFinishing, router]);
+    if (!isFinishing || !session) return;
+    let cancelled = false;
+    // Best-effort: on congested wifi this call itself can fail or time out.
+    // The summary route falls back to a template internally when Gemini is
+    // unreachable, but if the POST never lands at all the session simply
+    // stays in_progress and the patient must not be stuck on this screen.
+    fetchWithTimeout(`/api/session/${session.id}/summary`, { method: "POST" })
+      .catch(() => {})
+      .finally(() => {
+        if (!cancelled) router.push("/done");
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [isFinishing, session, router]);
 
   function handleNameContinue() {
     if (!name.trim()) {
