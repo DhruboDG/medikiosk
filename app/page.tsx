@@ -19,7 +19,6 @@ const COPY: Record<string, Localised> = {
   modeLabel: { en: "Consultation type", hi: "परामर्श का प्रकार" },
   allopathic: { en: "Allopathic", hi: "एलोपैथिक" },
   ayush: { en: "AYUSH", hi: "आयुष" },
-  comingNext: { en: "Coming next", hi: "जल्द आ रहा है" },
   start: { en: "Start", hi: "शुरू करें" },
   listenAgain: { en: "\u{1F50A} Listen again", hi: "\u{1F50A} फिर से सुनें" },
   hindiVoiceMissing: {
@@ -118,10 +117,13 @@ export default function LandingPage() {
             >
               {COPY.allopathic[lang]}
             </button>
-            <button type="button" className="landing-choice-btn" disabled aria-disabled="true">
+            <button
+              type="button"
+              className={mode === "ayush" ? "landing-choice-btn selected" : "landing-choice-btn"}
+              aria-pressed={mode === "ayush"}
+              onClick={() => chooseMode("ayush")}
+            >
               {COPY.ayush[lang]}
-              <br />
-              <span className="landing-note">{COPY.comingNext[lang]}</span>
             </button>
           </div>
         </div>

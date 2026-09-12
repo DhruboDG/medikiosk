@@ -11,7 +11,7 @@ import KioskShell from "../../components/KioskShell.tsx";
 import VoiceInput from "../../components/VoiceInput.tsx";
 import { useAppContext } from "../../components/AppProvider.tsx";
 import { warmUpMicrophone } from "../../lib/asr.ts";
-import { loadTree, nextNode, progress, tapAnswer } from "../../lib/ontology.ts";
+import { AYUSH_DISCLAIMER, loadTree, nextNode, progress, tapAnswer } from "../../lib/ontology.ts";
 import { isEmergency } from "../../lib/redflag.ts";
 import type { Answer, HistoryNode, Lang, Localised, Option, Session } from "../../lib/types.ts";
 
@@ -354,6 +354,10 @@ export default function IntakePage() {
       prompt={node.prompt}
       source={node.source}
     >
+      {node.section === "ayush" && (
+        <p className="kiosk-ayush-note">{AYUSH_DISCLAIMER[lang]}</p>
+      )}
+
       {node.answerType === "single" && (
         <OptionGrid
           options={node.options ?? []}

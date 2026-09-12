@@ -1,14 +1,23 @@
 /* The question engine. Question trees live in /ontology as JSON. This file
    only walks them. */
 
-import type { Answer, HistoryNode, Lang, Mode } from "./types.ts";
+import type { Answer, HistoryNode, Lang, Localised, Mode } from "./types.ts";
 import { conceptsIn } from "./concepts.ts";
 import general from "../ontology/general.json";
+import ayush from "../ontology/ayush.json";
 
 const GENERAL = general as HistoryNode[];
+const AYUSH = ayush as HistoryNode[];
 
-/* Packet 5 adds ontology/ayush.json. Until then both modes use the general tree. */
-const TREES: Record<Mode, HistoryNode[]> = { allopathic: GENERAL, ayush: GENERAL };
+const TREES: Record<Mode, HistoryNode[]> = { allopathic: GENERAL, ayush: AYUSH };
+
+/* Shown on every AYUSH screen and on the physician AyushPanel header. The
+   Dashavidha Pariksha is captured as a structured record only — the vaidya
+   interprets it, the software never scores or names a dosha. */
+export const AYUSH_DISCLAIMER: Localised = {
+  en: "This is a structured record of the Dashavidha Pariksha for the vaidya to interpret, not a constitutional assessment produced by software.",
+  hi: "यह दशविध परीक्षा का एक संरचित रिकॉर्ड है, जिसकी व्याख्या वैद्य करेंगे। यह सॉफ्टवेयर द्वारा बनाया गया प्रकृति निर्धारण नहीं है।",
+};
 
 /** Multi-select answers store their option values joined with this. */
 export const MULTI_SEPARATOR = ",";

@@ -1,0 +1,458 @@
+[
+  {
+    "id": "cc_open",
+    "section": "chief_complaint",
+    "prompt": { "en": "What brings you here today?", "hi": "आज आप किस तकलीफ से आए हैं?" },
+    "answerType": "text",
+    "concepts": ["chest_pain", "heart_attack", "breathlessness", "coughing_blood", "choking", "cough", "abdominal_pain", "fever"],
+    "next": { "default": "ayush_prakriti_build" },
+    "fhir": { "resource": "Condition", "path": "code.text" },
+    "source": "PS 3.3 Module C"
+  },
+
+  {
+    "id": "ayush_prakriti_build",
+    "section": "ayush",
+    "prompt": {
+      "en": "Which best describes your usual body build and appetite?",
+      "hi": "आपके शरीर की बनावट और भूख को इनमें से कौन सा सबसे अच्छा बताता है?"
+    },
+    "answerType": "single",
+    "options": [
+      { "id": "light", "value": "light", "icon": "🍃", "label": { "en": "Thin or light build, appetite varies, digests fast", "hi": "पतली या हल्की बनावट, भूख घटती-बढ़ती है, तेज पाचन" } },
+      { "id": "medium", "value": "medium", "icon": "🔥", "label": { "en": "Medium or muscular build, strong appetite, sharp digestion", "hi": "मध्यम या सुडौल बनावट, तेज भूख, तेज पाचन" } },
+      { "id": "heavy", "value": "heavy", "icon": "🪨", "label": { "en": "Heavy or solid build, steady appetite, slow digestion", "hi": "भारी या ठोस बनावट, स्थिर भूख, धीमा पाचन" } },
+      { "id": "unsure", "value": "unsure", "icon": "❓", "label": { "en": "Not sure", "hi": "पता नहीं" } }
+    ],
+    "next": { "default": "ayush_prakriti_temp" },
+    "source": "PS 3.3 Module A"
+  },
+  {
+    "id": "ayush_prakriti_temp",
+    "section": "ayush",
+    "prompt": {
+      "en": "Which best describes how you respond to weather, and your skin?",
+      "hi": "मौसम पर आपकी प्रतिक्रिया और आपकी त्वचा को इनमें से कौन सा सबसे अच्छा बताता है?"
+    },
+    "answerType": "single",
+    "options": [
+      { "id": "cold_averse", "value": "cold_averse", "icon": "🥶", "label": { "en": "Prefer warmth, dislike cold or wind, skin tends to be dry", "hi": "गर्मी पसंद, ठंड या हवा नापसंद, त्वचा रूखी रहती है" } },
+      { "id": "heat_averse", "value": "heat_averse", "icon": "🥵", "label": { "en": "Prefer cool weather, dislike heat, skin is warm or sensitive, prone to rashes", "hi": "ठंडा मौसम पसंद, गर्मी नापसंद, त्वचा गर्म या संवेदनशील, दाने होने की प्रवृत्ति" } },
+      { "id": "damp_averse", "value": "damp_averse", "icon": "🌦️", "label": { "en": "Comfortable in most weather, dislike damp or cold, skin is oily or smooth", "hi": "ज्यादातर मौसम में आराम, नमी या ठंड नापसंद, त्वचा तैलीय या चिकनी" } },
+      { "id": "unsure", "value": "unsure", "icon": "❓", "label": { "en": "Not sure", "hi": "पता नहीं" } }
+    ],
+    "next": { "default": "ayush_prakriti_sleep" },
+    "source": "PS 3.3 Module A"
+  },
+  {
+    "id": "ayush_prakriti_sleep",
+    "section": "ayush",
+    "prompt": { "en": "How would you describe your usual sleep?", "hi": "आपकी सामान्य नींद कैसी होती है?" },
+    "answerType": "single",
+    "options": [
+      { "id": "light", "value": "light", "icon": "🌙", "label": { "en": "Light sleeper, easily disturbed", "hi": "हल्की नींद, जल्दी खुल जाती है" } },
+      { "id": "moderate", "value": "moderate", "icon": "😴", "label": { "en": "Moderate sleep, wakes refreshed", "hi": "सामान्य नींद, ताजगी के साथ जागना" } },
+      { "id": "deep", "value": "deep", "icon": "🛌", "label": { "en": "Deep, long sleeper, hard to wake", "hi": "गहरी, लंबी नींद, जगाना मुश्किल" } },
+      { "id": "unsure", "value": "unsure", "icon": "❓", "label": { "en": "Not sure", "hi": "पता नहीं" } }
+    ],
+    "next": { "default": "ayush_vikriti" },
+    "source": "PS 3.3 Module A"
+  },
+
+  {
+    "id": "ayush_vikriti",
+    "section": "ayush",
+    "prompt": {
+      "en": "Compared to how you normally feel, how do you feel these days?",
+      "hi": "आप सामान्य दिनों की तुलना में आजकल कैसा महसूस करते हैं?"
+    },
+    "answerType": "single",
+    "options": [
+      { "id": "same_as_usual", "value": "same_as_usual", "icon": "➖", "label": { "en": "About the same as usual", "hi": "हमेशा की तरह ही" } },
+      { "id": "more_dry_light", "value": "more_dry_light", "icon": "🍂", "label": { "en": "More dryness, lightness or restlessness than usual", "hi": "सामान्य से ज्यादा रूखापन, हल्कापन या बेचैनी" } },
+      { "id": "more_heat_irritable", "value": "more_heat_irritable", "icon": "🔥", "label": { "en": "More heat, irritability or sharp sensations than usual", "hi": "सामान्य से ज्यादा गर्मी, चिड़चिड़ापन या तेज महसूस होना" } },
+      { "id": "more_heavy_sluggish", "value": "more_heavy_sluggish", "icon": "💧", "label": { "en": "More heaviness, sluggishness or congestion than usual", "hi": "सामान्य से ज्यादा भारीपन, सुस्ती या जकड़न" } }
+    ],
+    "next": { "default": "ayush_sara_appearance" },
+    "source": "PS 3.3 Module A"
+  },
+
+  {
+    "id": "ayush_sara_appearance",
+    "section": "ayush",
+    "prompt": { "en": "How would you describe your hair, skin and nails?", "hi": "आपके बाल, त्वचा और नाखून कैसे हैं?" },
+    "answerType": "single",
+    "options": [
+      { "id": "thin_dry", "value": "thin_dry", "icon": "🍃", "label": { "en": "Thin, dry or brittle", "hi": "पतले, रूखे या कमजोर" } },
+      { "id": "soft_sensitive", "value": "soft_sensitive", "icon": "🌸", "label": { "en": "Soft, warm-toned or sensitive", "hi": "मुलायम, हल्के गर्म रंग के या संवेदनशील" } },
+      { "id": "thick_strong", "value": "thick_strong", "icon": "✨", "label": { "en": "Thick, strong and glossy", "hi": "घने, मजबूत और चमकदार" } },
+      { "id": "unsure", "value": "unsure", "icon": "❓", "label": { "en": "Not sure", "hi": "पता नहीं" } }
+    ],
+    "next": { "default": "ayush_sara_vitality" },
+    "source": "PS 3.3 Module A"
+  },
+  {
+    "id": "ayush_sara_vitality",
+    "section": "ayush",
+    "prompt": { "en": "How would you describe your general energy and voice?", "hi": "आपकी सामान्य ऊर्जा और आवाज़ कैसी है?" },
+    "answerType": "single",
+    "options": [
+      { "id": "low", "value": "low", "icon": "🔋", "label": { "en": "Low energy, soft or weak voice", "hi": "कम ऊर्जा, धीमी या कमजोर आवाज़" } },
+      { "id": "moderate", "value": "moderate", "icon": "🙂", "label": { "en": "Moderate energy, clear voice", "hi": "सामान्य ऊर्जा, स्पष्ट आवाज़" } },
+      { "id": "high", "value": "high", "icon": "⚡", "label": { "en": "High energy, strong or loud voice", "hi": "अधिक ऊर्जा, तेज या मजबूत आवाज़" } },
+      { "id": "unsure", "value": "unsure", "icon": "❓", "label": { "en": "Not sure", "hi": "पता नहीं" } }
+    ],
+    "next": { "default": "ayush_samhanana" },
+    "source": "PS 3.3 Module A"
+  },
+
+  {
+    "id": "ayush_samhanana",
+    "section": "ayush",
+    "prompt": {
+      "en": "How would you describe the firmness of your body build and joints?",
+      "hi": "आपके शरीर की बनावट और जोड़ों की मजबूती कैसी है?"
+    },
+    "answerType": "single",
+    "options": [
+      { "id": "loose", "value": "loose", "icon": "🪶", "label": { "en": "Loosely built, joints feel light", "hi": "ढीली बनावट, जोड़ हल्के महसूस होते हैं" } },
+      { "id": "moderate", "value": "moderate", "icon": "🙂", "label": { "en": "Moderately built and firm", "hi": "सामान्य बनावट और मजबूती" } },
+      { "id": "sturdy", "value": "sturdy", "icon": "🪨", "label": { "en": "Well built, compact and sturdy", "hi": "मजबूत, सुडौल और ठोस बनावट" } },
+      { "id": "unsure", "value": "unsure", "icon": "❓", "label": { "en": "Not sure", "hi": "पता नहीं" } }
+    ],
+    "next": { "default": "ayush_pramana" },
+    "source": "PS 3.3 Module A"
+  },
+
+  {
+    "id": "ayush_pramana",
+    "section": "ayush",
+    "prompt": {
+      "en": "How would you describe your height and weight in relation to each other?",
+      "hi": "आपकी लंबाई और वजन एक-दूसरे के अनुपात में कैसे हैं?"
+    },
+    "answerType": "single",
+    "options": [
+      { "id": "tall_thin", "value": "tall_thin", "icon": "📏", "label": { "en": "Tall or thin for my weight", "hi": "वजन के मुकाबले लंबा या पतला" } },
+      { "id": "balanced", "value": "balanced", "icon": "⚖️", "label": { "en": "Height and weight feel balanced", "hi": "लंबाई और वजन संतुलित लगते हैं" } },
+      { "id": "heavier", "value": "heavier", "icon": "🧱", "label": { "en": "Heavier build for my height", "hi": "लंबाई के मुकाबले भारी शरीर" } },
+      { "id": "unsure", "value": "unsure", "icon": "❓", "label": { "en": "Not sure", "hi": "पता नहीं" } }
+    ],
+    "next": { "default": "ayush_satmya" },
+    "source": "PS 3.3 Module A"
+  },
+
+  {
+    "id": "ayush_satmya",
+    "section": "ayush",
+    "prompt": { "en": "Which best describes what suits you?", "hi": "आपको इनमें से क्या सबसे ज्यादा सूट करता है?" },
+    "answerType": "single",
+    "options": [
+      { "id": "warm_food", "value": "warm_food", "icon": "🍲", "label": { "en": "Warm, cooked, well-spiced food", "hi": "गरम, पका हुआ, मसालेदार भोजन" } },
+      { "id": "cool_food", "value": "cool_food", "icon": "🥗", "label": { "en": "Cool, light, mildly spiced food", "hi": "ठंडा, हल्का, कम मसाले वाला भोजन" } },
+      { "id": "anything", "value": "anything", "icon": "🍽️", "label": { "en": "Any food suits me, I rarely react", "hi": "मुझे कोई भी खाना सूट करता है" } },
+      { "id": "unsure", "value": "unsure", "icon": "❓", "label": { "en": "Not sure", "hi": "पता नहीं" } }
+    ],
+    "next": { "default": "ayush_sattva" },
+    "source": "PS 3.3 Module A"
+  },
+
+  {
+    "id": "ayush_sattva",
+    "section": "ayush",
+    "prompt": {
+      "en": "How do you usually handle stress or difficult situations?",
+      "hi": "आप तनाव या मुश्किल हालात को आमतौर पर कैसे संभालते हैं?"
+    },
+    "answerType": "single",
+    "options": [
+      { "id": "anxious", "value": "anxious", "icon": "😟", "label": { "en": "I get anxious or worried quickly", "hi": "मैं जल्दी चिंतित या परेशान हो जाता/जाती हूं" } },
+      { "id": "irritated_recovers", "value": "irritated_recovers", "icon": "😤", "label": { "en": "I get irritated but recover quickly", "hi": "मुझे गुस्सा जल्दी आता है पर मैं जल्दी ठीक हो जाता/जाती हूं" } },
+      { "id": "calm", "value": "calm", "icon": "🧘", "label": { "en": "I stay calm and steady most of the time", "hi": "मैं ज्यादातर शांत और स्थिर रहता/रहती हूं" } },
+      { "id": "unsure", "value": "unsure", "icon": "❓", "label": { "en": "Not sure", "hi": "पता नहीं" } }
+    ],
+    "next": { "default": "ayush_ahara_shakti" },
+    "source": "PS 3.3 Module A"
+  },
+
+  {
+    "id": "ayush_ahara_shakti",
+    "section": "ayush",
+    "prompt": {
+      "en": "How much food can you comfortably eat, and how often do you feel hungry?",
+      "hi": "आप कितना खाना आराम से खा सकते हैं, और कितनी बार भूख महसूस होती है?"
+    },
+    "answerType": "single",
+    "options": [
+      { "id": "small_irregular", "value": "small_irregular", "icon": "🍽️", "label": { "en": "Small amounts, hunger is irregular", "hi": "थोड़ा खाना, भूख अनियमित रहती है" } },
+      { "id": "moderate_regular", "value": "moderate_regular", "icon": "🍛", "label": { "en": "Moderate amounts, hunger at regular times", "hi": "सामान्य मात्रा, नियमित समय पर भूख लगती है" } },
+      { "id": "large_frequent", "value": "large_frequent", "icon": "🍲", "label": { "en": "Large amounts, feel hungry often", "hi": "ज्यादा मात्रा, बार-बार भूख लगती है" } },
+      { "id": "unsure", "value": "unsure", "icon": "❓", "label": { "en": "Not sure", "hi": "पता नहीं" } }
+    ],
+    "next": { "default": "ayush_vyayama_shakti" },
+    "source": "PS 3.3 Module A"
+  },
+
+  {
+    "id": "ayush_vyayama_shakti",
+    "section": "ayush",
+    "prompt": {
+      "en": "How much physical activity can you do before feeling tired?",
+      "hi": "थकान महसूस होने से पहले आप कितनी शारीरिक मेहनत कर सकते हैं?"
+    },
+    "answerType": "single",
+    "options": [
+      { "id": "tires_quickly", "value": "tires_quickly", "icon": "🥱", "label": { "en": "Tire quickly, even with light activity", "hi": "हल्के काम से भी जल्दी थक जाता/जाती हूं" } },
+      { "id": "moderate", "value": "moderate", "icon": "🚶", "label": { "en": "Moderate activity is comfortable", "hi": "सामान्य मेहनत आराम से कर लेता/लेती हूं" } },
+      { "id": "high_stamina", "value": "high_stamina", "icon": "🏃", "label": { "en": "Can do heavy activity for long without tiring", "hi": "बिना थके काफी देर तक भारी मेहनत कर सकता/सकती हूं" } },
+      { "id": "unsure", "value": "unsure", "icon": "❓", "label": { "en": "Not sure", "hi": "पता नहीं" } }
+    ],
+    "next": { "default": "ayush_vaya" },
+    "source": "PS 3.3 Module A"
+  },
+
+  {
+    "id": "ayush_vaya",
+    "section": "ayush",
+    "prompt": { "en": "Which stage of life would you say you are in?", "hi": "आप जीवन के किस पड़ाव में हैं?" },
+    "answerType": "single",
+    "options": [
+      { "id": "childhood", "value": "childhood", "icon": "🧒", "label": { "en": "Childhood or growing years", "hi": "बचपन या बढ़ने की उम्र" } },
+      { "id": "youth", "value": "youth", "icon": "🧑", "label": { "en": "Youth or young adulthood", "hi": "युवावस्था" } },
+      { "id": "middle_age", "value": "middle_age", "icon": "🧑‍🦳", "label": { "en": "Middle age", "hi": "अधेड़ उम्र" } },
+      { "id": "older_age", "value": "older_age", "icon": "👴", "label": { "en": "Older age", "hi": "बुढ़ापा" } }
+    ],
+    "next": { "default": "ayush_ahara_vihara_diet" },
+    "source": "PS 3.3 Module A"
+  },
+
+  {
+    "id": "ayush_ahara_vihara_diet",
+    "section": "ayush",
+    "prompt": {
+      "en": "How would you describe your usual meal routine and water intake?",
+      "hi": "आपकी सामान्य खाने की दिनचर्या और पानी पीने की आदत कैसी है?"
+    },
+    "answerType": "single",
+    "options": [
+      { "id": "regular", "value": "regular", "icon": "✅", "label": { "en": "Regular meals, adequate water", "hi": "नियमित भोजन, पर्याप्त पानी" } },
+      { "id": "irregular", "value": "irregular", "icon": "⏱️", "label": { "en": "Irregular or skipped meals", "hi": "अनियमित या छूटा हुआ भोजन" } },
+      { "id": "overeating", "value": "overeating", "icon": "🍔", "label": { "en": "Frequent snacking or overeating", "hi": "बार-बार नाश्ता करना या ज्यादा खाना" } },
+      { "id": "unsure", "value": "unsure", "icon": "❓", "label": { "en": "Not sure", "hi": "पता नहीं" } }
+    ],
+    "next": { "default": "ayush_ahara_vihara_routine" },
+    "source": "PS 3.3 Module A"
+  },
+  {
+    "id": "ayush_ahara_vihara_routine",
+    "section": "ayush",
+    "prompt": {
+      "en": "How would you describe your daily routine, including sleep, waking time and activity?",
+      "hi": "आपकी दिनचर्या कैसी है, जैसे नींद, जागने का समय और गतिविधि?"
+    },
+    "answerType": "single",
+    "options": [
+      { "id": "fixed", "value": "fixed", "icon": "⏰", "label": { "en": "Fixed routine, sleep and wake at set times", "hi": "निश्चित दिनचर्या, तय समय पर सोना-जागना" } },
+      { "id": "irregular", "value": "irregular", "icon": "🔀", "label": { "en": "Irregular routine, timings vary a lot", "hi": "अनियमित दिनचर्या, समय बहुत बदलता रहता है" } },
+      { "id": "sedentary", "value": "sedentary", "icon": "🪑", "label": { "en": "Mostly sedentary, little physical activity", "hi": "ज्यादातर बैठे रहना, कम शारीरिक गतिविधि" } },
+      { "id": "active", "value": "active", "icon": "🏃", "label": { "en": "Physically active most days", "hi": "ज्यादातर दिन शारीरिक रूप से सक्रिय" } }
+    ],
+    "next": { "default": "ayush_ahara_vihara_tobacco" },
+    "source": "PS 3.3 Module A"
+  },
+  {
+    "id": "ayush_ahara_vihara_tobacco",
+    "section": "ayush",
+    "prompt": { "en": "Do you smoke or use tobacco?", "hi": "क्या आप धूम्रपान करते हैं या तंबाकू लेते हैं?" },
+    "answerType": "single",
+    "options": [
+      { "id": "never", "value": "never", "icon": "🚭", "label": { "en": "Never", "hi": "कभी नहीं" } },
+      { "id": "smoke", "value": "smoke", "icon": "🚬", "label": { "en": "Bidi or cigarette", "hi": "बीड़ी या सिगरेट" } },
+      { "id": "chew", "value": "chew", "icon": "🌿", "label": { "en": "Gutkha, khaini or chewing tobacco", "hi": "गुटखा, खैनी या तंबाकू" } },
+      { "id": "quit", "value": "quit", "icon": "⏹️", "label": { "en": "I used to, now stopped", "hi": "पहले लेते थे, अब छोड़ दिया" } }
+    ],
+    "next": { "default": "ayush_ahara_vihara_alcohol" },
+    "fhir": { "resource": "Observation", "path": "valueString" },
+    "source": "PS 3.3 Module A"
+  },
+  {
+    "id": "ayush_ahara_vihara_alcohol",
+    "section": "ayush",
+    "prompt": { "en": "Do you drink alcohol?", "hi": "क्या आप शराब पीते हैं?" },
+    "answerType": "single",
+    "options": [
+      { "id": "never", "value": "never", "icon": "🚫", "label": { "en": "Never", "hi": "कभी नहीं" } },
+      { "id": "sometimes", "value": "sometimes", "icon": "🍺", "label": { "en": "Sometimes", "hi": "कभी कभी" } },
+      { "id": "daily", "value": "daily", "icon": "🥃", "label": { "en": "Most days", "hi": "लगभग रोज" } },
+      { "id": "quit", "value": "quit", "icon": "⏹️", "label": { "en": "I used to, now stopped", "hi": "पहले पीते थे, अब छोड़ दिया" } }
+    ],
+    "next": { "default": "ph_conditions" },
+    "fhir": { "resource": "Observation", "path": "valueString" },
+    "source": "PS 3.3 Module A"
+  },
+
+  {
+    "id": "ph_conditions",
+    "section": "past_history",
+    "prompt": { "en": "Has a doctor ever told you that you have any of these?", "hi": "क्या किसी डॉक्टर ने कभी बताया है कि आपको इनमें से कोई बीमारी है?" },
+    "answerType": "multi",
+    "options": [
+      { "id": "diabetes", "value": "diabetes", "icon": "🍬", "label": { "en": "Diabetes (sugar)", "hi": "डायबिटीज (शुगर)" } },
+      { "id": "hypertension", "value": "hypertension", "icon": "🩺", "label": { "en": "High blood pressure", "hi": "हाई बीपी" } },
+      { "id": "heart_disease", "value": "heart_disease", "icon": "❤️", "label": { "en": "Heart disease", "hi": "दिल की बीमारी" } },
+      { "id": "lung_disease", "value": "lung_disease", "icon": "🫁", "label": { "en": "Lung disease", "hi": "फेफड़ों की बीमारी" } },
+      { "id": "thyroid", "value": "thyroid", "icon": "🦋", "label": { "en": "Thyroid problem", "hi": "थायराइड" } },
+      { "id": "tb", "value": "tb", "icon": "🧫", "label": { "en": "TB", "hi": "टीबी" } },
+      { "id": "none", "value": "none", "icon": "✅", "label": { "en": "None of these", "hi": "इनमें से कोई नहीं" } }
+    ],
+    "next": { "default": "ph_surgery" },
+    "fhir": { "resource": "Condition", "path": "code.text" },
+    "source": "PS 3.3 Module C"
+  },
+  {
+    "id": "ph_surgery",
+    "section": "past_history",
+    "prompt": { "en": "Have you ever had an operation?", "hi": "क्या आपका कभी ऑपरेशन हुआ है?" },
+    "answerType": "single",
+    "options": [
+      { "id": "no", "value": "no", "icon": "✖️", "label": { "en": "No", "hi": "नहीं" } },
+      { "id": "once", "value": "once", "icon": "🏥", "label": { "en": "Yes, once", "hi": "हां, एक बार" } },
+      { "id": "more", "value": "more", "icon": "🏥", "label": { "en": "Yes, more than once", "hi": "हां, एक से ज्यादा बार" } },
+      { "id": "unsure", "value": "unsure", "icon": "❓", "label": { "en": "Not sure", "hi": "पता नहीं" } }
+    ],
+    "next": { "default": "ph_admission" },
+    "fhir": { "resource": "Procedure", "path": "code.text" },
+    "source": "PS 3.3 Module C"
+  },
+  {
+    "id": "ph_admission",
+    "section": "past_history",
+    "prompt": { "en": "Have you stayed in hospital in the last year?", "hi": "क्या पिछले एक साल में आप अस्पताल में भर्ती हुए हैं?" },
+    "answerType": "single",
+    "options": [
+      { "id": "no", "value": "no", "icon": "✖️", "label": { "en": "No", "hi": "नहीं" } },
+      { "id": "once", "value": "once", "icon": "🛏️", "label": { "en": "Yes, once", "hi": "हां, एक बार" } },
+      { "id": "more", "value": "more", "icon": "🛏️", "label": { "en": "Yes, more than once", "hi": "हां, एक से ज्यादा बार" } },
+      { "id": "unsure", "value": "unsure", "icon": "❓", "label": { "en": "Not sure", "hi": "पता नहीं" } }
+    ],
+    "next": { "default": "da_meds" },
+    "source": "PS 3.3 Module C"
+  },
+
+  {
+    "id": "da_meds",
+    "section": "drug_allergy",
+    "prompt": { "en": "Do you take any medicines regularly?", "hi": "क्या आप रोज कोई दवा लेते हैं?" },
+    "answerType": "single",
+    "options": [
+      { "id": "none", "value": "none", "icon": "✖️", "label": { "en": "No", "hi": "नहीं" } },
+      { "id": "few", "value": "few", "icon": "💊", "label": { "en": "Yes, 1 or 2 medicines", "hi": "हां, 1 या 2 दवाएं" } },
+      { "id": "many", "value": "many", "icon": "💊", "label": { "en": "Yes, 3 or more", "hi": "हां, 3 या उससे ज्यादा" } },
+      { "id": "unsure", "value": "unsure", "icon": "❓", "label": { "en": "Not sure", "hi": "पता नहीं" } }
+    ],
+    "next": {
+      "when": [{ "answerIn": ["few", "many"], "goto": "da_meds_list" }],
+      "default": "da_allergy"
+    },
+    "source": "PS 3.3 Module C"
+  },
+  {
+    "id": "da_meds_list",
+    "section": "drug_allergy",
+    "prompt": { "en": "Please say or type the names of your medicines", "hi": "कृपया अपनी दवाओं के नाम बोलिए या लिखिए" },
+    "answerType": "text",
+    "next": { "default": "da_allergy" },
+    "fhir": { "resource": "MedicationStatement", "path": "medicationCodeableConcept.text" },
+    "source": "PS 3.3 Module C"
+  },
+  {
+    "id": "da_allergy",
+    "section": "drug_allergy",
+    "prompt": { "en": "Are you allergic to anything?", "hi": "क्या आपको किसी चीज से एलर्जी है?" },
+    "answerType": "single",
+    "options": [
+      { "id": "none", "value": "none", "icon": "✅", "label": { "en": "No known allergy", "hi": "कोई एलर्जी नहीं" } },
+      { "id": "medicine", "value": "medicine", "icon": "💊", "label": { "en": "Yes, to a medicine", "hi": "हां, किसी दवा से" } },
+      { "id": "food", "value": "food", "icon": "🥜", "label": { "en": "Yes, to a food", "hi": "हां, किसी खाने की चीज से" } },
+      { "id": "other", "value": "other", "icon": "🌼", "label": { "en": "Yes, to something else", "hi": "हां, किसी और चीज से" } },
+      { "id": "unsure", "value": "unsure", "icon": "❓", "label": { "en": "Not sure", "hi": "पता नहीं" } }
+    ],
+    "next": {
+      "when": [{ "answerIn": ["medicine", "food", "other"], "goto": "da_allergy_detail" }],
+      "default": "fh_conditions"
+    },
+    "fhir": { "resource": "AllergyIntolerance", "path": "code.text" },
+    "source": "PS 3.3 Module C"
+  },
+  {
+    "id": "da_allergy_detail",
+    "section": "drug_allergy",
+    "prompt": { "en": "What are you allergic to, and what happens?", "hi": "किस चीज से एलर्जी है और उससे क्या होता है?" },
+    "answerType": "text",
+    "next": { "default": "fh_conditions" },
+    "fhir": { "resource": "AllergyIntolerance", "path": "reaction.description" },
+    "source": "PS 3.3 Module C"
+  },
+
+  {
+    "id": "fh_conditions",
+    "section": "family",
+    "prompt": { "en": "Does anyone in your family have any of these?", "hi": "क्या आपके परिवार में किसी को इनमें से कोई बीमारी है?" },
+    "answerType": "multi",
+    "options": [
+      { "id": "diabetes", "value": "diabetes", "icon": "🍬", "label": { "en": "Diabetes (sugar)", "hi": "डायबिटीज (शुगर)" } },
+      { "id": "hypertension", "value": "hypertension", "icon": "🩺", "label": { "en": "High blood pressure", "hi": "हाई बीपी" } },
+      { "id": "heart_disease", "value": "heart_disease", "icon": "❤️", "label": { "en": "Heart disease", "hi": "दिल की बीमारी" } },
+      { "id": "cancer", "value": "cancer", "icon": "🎗️", "label": { "en": "Cancer", "hi": "कैंसर" } },
+      { "id": "none", "value": "none", "icon": "✅", "label": { "en": "None of these", "hi": "इनमें से कोई नहीं" } },
+      { "id": "unsure", "value": "unsure", "icon": "❓", "label": { "en": "Not sure", "hi": "पता नहीं" } }
+    ],
+    "next": { "default": "fh_similar" },
+    "fhir": { "resource": "FamilyMemberHistory", "path": "condition.code.text" },
+    "source": "PS 3.3 Module C"
+  },
+  {
+    "id": "fh_similar",
+    "section": "family",
+    "prompt": { "en": "Does anyone in your family have a problem like yours?", "hi": "क्या परिवार में किसी को आप जैसी तकलीफ है?" },
+    "answerType": "single",
+    "options": [
+      { "id": "no", "value": "no", "icon": "✖️", "label": { "en": "No", "hi": "नहीं" } },
+      { "id": "yes", "value": "yes", "icon": "👨‍👩‍👧", "label": { "en": "Yes", "hi": "हां" } },
+      { "id": "unsure", "value": "unsure", "icon": "❓", "label": { "en": "Not sure", "hi": "पता नहीं" } }
+    ],
+    "next": { "default": "ros_general" },
+    "source": "PS 3.3 Module C"
+  },
+
+  {
+    "id": "ros_general",
+    "section": "ros",
+    "prompt": { "en": "In the last month, have you noticed any of these?", "hi": "पिछले एक महीने में क्या आपने इनमें से कुछ महसूस किया है?" },
+    "answerType": "multi",
+    "options": [
+      { "id": "weight_loss", "value": "weight_loss", "icon": "⚖️", "label": { "en": "Weight loss", "hi": "वजन कम होना" } },
+      { "id": "tiredness", "value": "tiredness", "icon": "🥱", "label": { "en": "Feeling tired", "hi": "थकान" } },
+      { "id": "appetite", "value": "appetite", "icon": "🍽️", "label": { "en": "Less appetite", "hi": "भूख कम लगना" } },
+      { "id": "feet_swelling", "value": "feet_swelling", "icon": "🦶", "label": { "en": "Swelling of the feet", "hi": "पैरों में सूजन" } },
+      { "id": "none", "value": "none", "icon": "✅", "label": { "en": "None of these", "hi": "इनमें से कोई नहीं" } }
+    ],
+    "next": { "default": "ros_systems" },
+    "source": "PS 3.3 Module C"
+  },
+  {
+    "id": "ros_systems",
+    "section": "ros",
+    "prompt": { "en": "Do you have any of these problems?", "hi": "क्या आपको इनमें से कोई तकलीफ है?" },
+    "answerType": "multi",
+    "options": [
+      { "id": "headache", "value": "headache", "icon": "🤕", "label": { "en": "Headache", "hi": "सिरदर्द" } },
+      { "id": "burning_urine", "value": "burning_urine", "icon": "🚻", "label": { "en": "Burning while passing urine", "hi": "पेशाब में जलन" } },
+      { "id": "bowel", "value": "bowel", "icon": "🚽", "label": { "en": "Change in bowel habit", "hi": "शौच की आदत में बदलाव" } },
+      { "id": "joint_pain", "value": "joint_pain", "icon": "🦵", "label": { "en": "Joint pain", "hi": "जोड़ों में दर्द" } },
+      { "id": "rash", "value": "rash", "icon": "🔴", "label": { "en": "Skin rash", "hi": "त्वचा पर दाने" } },
+      { "id": "none", "value": "none", "icon": "✅", "label": { "en": "None of these", "hi": "इनमें से कोई नहीं" } }
+    ],
+    "source": "PS 3.3 Module C"
+  }
+]

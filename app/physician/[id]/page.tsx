@@ -7,6 +7,7 @@
 
 import { use, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import AyushPanel from "../../../components/AyushPanel.tsx";
 import type { RedFlag, Session, Summary } from "../../../lib/types.ts";
 
 type SummaryTextField = Exclude<keyof Summary, "ayush">;
@@ -143,6 +144,8 @@ export default function PhysicianSessionPage({ params }: { params: Promise<{ id:
             ))}
           </div>
         )}
+
+        {session.mode === "ayush" && <AyushPanel session={session} />}
 
         <details className="border border-gray-300 rounded-xl px-4 py-3">
           <summary className="cursor-pointer font-semibold">FHIR bundle (JSON)</summary>

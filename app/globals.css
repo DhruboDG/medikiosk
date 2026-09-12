@@ -188,6 +188,15 @@ body {
   font-size: 1rem;
 }
 
+.kiosk-ayush-note {
+  background: var(--kiosk-warning-bg);
+  color: var(--kiosk-warning-fg);
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-size: 1rem;
+  margin: 0;
+}
+
 .kiosk-answer-area {
   display: flex;
   flex-direction: column;
