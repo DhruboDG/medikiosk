@@ -38,6 +38,7 @@ export default function PhysicianQueuePage() {
   const [sessions, setSessions] = useState<Session[]>([]);
   const [includeInProgress, setIncludeInProgress] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [seeding, setSeeding] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   async function load() {
@@ -52,6 +53,22 @@ export default function PhysicianQueuePage() {
       setError("Could not load the queue. Check the connection and try again.");
     } finally {
       setLoading(false);
+    }
+  }
+
+  // Recovers a demo-ready queue if the venue database is lost. Adds the six
+  // synthetic patients on top of whatever is already there.
+  async function loadDemoQueue() {
+    setSeeding(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/demo/seed", { method: "POST" });
+      if (!res.ok) throw new Error("bad status");
+      await load();
+    } catch {
+      setError("Could not load the demo queue. Check the connection and try again.");
+    } finally {
+      setSeeding(false);
     }
   }
 
@@ -81,6 +98,14 @@ export default function PhysicianQueuePage() {
               className="border border-gray-300 rounded-lg px-3 py-2 text-sm font-semibold"
             >
               Refresh
+            </button>
+            <button
+              type="button"
+              onClick={loadDemoQueue}
+              disabled={seeding}
+              className="border border-gray-300 rounded-lg px-3 py-2 text-sm font-semibold disabled:opacity-50"
+            >
+              {seeding ? "Loading demo queue…" : "Load demo queue"}
             </button>
           </div>
         </div>

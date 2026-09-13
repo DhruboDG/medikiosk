@@ -6,7 +6,10 @@
     "dev": "next dev -p 3100",
     "build": "next build",
     "start": "next start -p 3100",
-    "lint": "eslint"
+    "lint": "eslint",
+    "reset-db": "node data/reset-db.ts",
+    "seed": "node --env-file=.env.local data/seed.ts",
+    "test": "node --test lib/*.test.ts"
   },
   "dependencies": {
     "better-sqlite3": "^13.0.3",

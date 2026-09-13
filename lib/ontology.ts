@@ -3,8 +3,8 @@
 
 import type { Answer, HistoryNode, Lang, Localised, Mode } from "./types.ts";
 import { conceptsIn } from "./concepts.ts";
-import general from "../ontology/general.json";
-import ayush from "../ontology/ayush.json";
+import general from "../ontology/general.json" with { type: "json" };
+import ayush from "../ontology/ayush.json" with { type: "json" };
 
 const GENERAL = general as HistoryNode[];
 const AYUSH = ayush as HistoryNode[];

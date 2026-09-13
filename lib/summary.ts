@@ -109,10 +109,16 @@ export async function generateSummary(session: Session): Promise<Summary> {
   if (session.answers.length === 0) return template;
 
   const raw = await callGemini(buildPrompt(session));
-  if (!raw) return template;
+  if (!raw) {
+    console.warn(`[summary] Model unreachable for session ${session.id}; falling back to template.`);
+    return template;
+  }
 
   const parsed = parseModelSummary(raw);
-  if (!parsed) return template;
+  if (!parsed) {
+    console.warn(`[summary] Model response unusable for session ${session.id}; falling back to template.`);
+    return template;
+  }
 
   return { ...parsed, priorInvestigations: NO_INVESTIGATIONS };
 }
