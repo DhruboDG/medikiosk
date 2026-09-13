@@ -7,6 +7,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import KioskShell from "../../components/KioskShell.tsx";
 import { useAppContext } from "../../components/AppProvider.tsx";
+import { DONE_SCREEN_TIMEOUT_MS, useInactivityTimeout } from "../../lib/kiosk-timeout.ts";
 import type { Localised, Session } from "../../lib/types.ts";
 
 const WAITING: Localised = {
@@ -20,6 +21,11 @@ const NO_CLINICAL_INFO: Localised = {
 };
 
 const NEXT_PATIENT: Localised = { en: "Next patient", hi: "अगला मरीज़" };
+
+const RETURNING_SOON: Localised = {
+  en: "Returning to start",
+  hi: "शुरुआत पर लौट रहे हैं",
+};
 
 export default function DonePage() {
   const router = useRouter();
@@ -57,6 +63,8 @@ export default function DonePage() {
     router.push("/");
   }
 
+  const secondsLeft = useInactivityTimeout(DONE_SCREEN_TIMEOUT_MS, startNewPatient);
+
   return (
     <KioskShell
       questionId="done"
@@ -74,6 +82,11 @@ export default function DonePage() {
           {NEXT_PATIENT[lang]}
         </button>
       </div>
+      {secondsLeft !== null && (
+        <p className="kiosk-source">
+          {RETURNING_SOON[lang]} ({secondsLeft})
+        </p>
+      )}
     </KioskShell>
   );
 }
