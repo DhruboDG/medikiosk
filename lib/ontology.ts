@@ -86,6 +86,11 @@ function walk(tree: HistoryNode[], answers: Answer[]): { path: HistoryNode[]; pe
   return { path, pending: null };
 }
 
+/** The answered nodes on the current path, in the order they were asked. */
+export function answeredPath(tree: HistoryNode[], answers: Answer[]): HistoryNode[] {
+  return walk(tree, answers).path;
+}
+
 /** The next question to ask, or null when the history is complete. */
 export function nextNode(tree: HistoryNode[], answers: Answer[]): HistoryNode | null {
   return walk(tree, answers).pending;

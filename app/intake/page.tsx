@@ -11,7 +11,10 @@ import KioskShell from "../../components/KioskShell.tsx";
 import VoiceInput from "../../components/VoiceInput.tsx";
 import { useAppContext } from "../../components/AppProvider.tsx";
 import { warmUpMicrophone } from "../../lib/asr.ts";
-import { AYUSH_DISCLAIMER, loadTree, nextNode, progress, tapAnswer } from "../../lib/ontology.ts";
+import {
+  AYUSH_DISCLAIMER, answeredPath, latestAnswer, loadTree, nextNode, progress, tapAnswer,
+} from "../../lib/ontology.ts";
+import { backTarget, selectedOptionIds } from "../../lib/intake-back.ts";
 import { isEmergency } from "../../lib/redflag.ts";
 import type { Answer, HistoryNode, Lang, Localised, Option, Session } from "../../lib/types.ts";
 
@@ -40,7 +43,72 @@ const COPY = {
   back: { en: "Back", hi: "पीछे" } as Localised,
   starting: { en: "Starting your session…", hi: "सेशन शुरू हो रहा है…" } as Localised,
   finishing: { en: "Finishing up…", hi: "पूरा हो रहा है…" } as Localised,
+  startOver: { en: "Start over", hi: "फिर से शुरू करें" } as Localised,
+  startOverConfirm: {
+    en: "Start again from the beginning? The answers you gave will not be used.",
+    hi: "क्या शुरुआत से फिर शुरू करें? आपके दिए उत्तर इस्तेमाल नहीं होंगे।",
+  } as Localised,
+  startOverYes: { en: "Yes, start over", hi: "हां, फिर से शुरू करें" } as Localised,
+  startOverCancel: { en: "No, keep going", hi: "नहीं, जारी रखें" } as Localised,
 };
+
+/* Back and Start over, kept below the answer area and apart from Continue so
+   a tap meant for Continue cannot land on either. Start over only opens an
+   inline confirmation. Labels show both languages. */
+function IntakeFooter({
+  onBack,
+  busy,
+  confirming,
+  onConfirmingChange,
+  onStartOver,
+}: {
+  onBack?: () => void;
+  busy: boolean;
+  confirming: boolean;
+  onConfirmingChange: (value: boolean) => void;
+  onStartOver: () => void;
+}) {
+  return (
+    <div className="intake-footer">
+      {confirming ? (
+        <div className="intake-confirm" role="group" aria-label={`${COPY.startOver.en} / ${COPY.startOver.hi}`}>
+          <p className="intake-confirm-text">
+            {COPY.startOverConfirm.en}
+            <br />
+            {COPY.startOverConfirm.hi}
+          </p>
+          <div className="intake-footer-row">
+            <button type="button" className="kiosk-secondary-btn intake-quiet-btn" onClick={() => onConfirmingChange(false)}>
+              {COPY.startOverCancel.en} / {COPY.startOverCancel.hi}
+            </button>
+            <button type="button" className="kiosk-secondary-btn intake-quiet-btn" onClick={onStartOver}>
+              {COPY.startOverYes.en} / {COPY.startOverYes.hi}
+            </button>
+          </div>
+        </div>
+      ) : (
+        <div className="intake-footer-row">
+          {onBack ? (
+            <button type="button" className="kiosk-secondary-btn intake-back-btn" disabled={busy} onClick={onBack}>
+              {"← "}
+              {COPY.back.en} / {COPY.back.hi}
+            </button>
+          ) : (
+            <span />
+          )}
+          <button
+            type="button"
+            className="kiosk-secondary-btn intake-quiet-btn"
+            disabled={busy}
+            onClick={() => onConfirmingChange(true)}
+          >
+            {COPY.startOver.en} / {COPY.startOver.hi}
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
 
 const GENDER_OPTIONS: Option[] = [
   { id: "male", value: "male", icon: "\u{1F468}", label: { en: "Male", hi: "पुरुष" } },
@@ -107,17 +175,29 @@ export default function IntakePage() {
   const [draftText, setDraftText] = useState("");
   const [multiSelected, setMultiSelected] = useState<Set<string>>(new Set());
   const [renderedNodeId, setRenderedNodeId] = useState<string | undefined>(undefined);
+  // Index into the answered path of a question reopened with Back. null means
+  // the screen shows the next unanswered question.
+  const [editIndex, setEditIndex] = useState<number | null>(null);
+  const [confirmingStartOver, setConfirmingStartOver] = useState(false);
 
   const tree = loadTree(mode);
-  const node: HistoryNode | null = session ? nextNode(tree, session.answers) : null;
-  const isFinishing = phase === "question" && !!session && !node;
+  const path: HistoryNode[] = session ? answeredPath(tree, session.answers) : [];
+  const pending: HistoryNode | null = session ? nextNode(tree, session.answers) : null;
+  const nodeIndex = editIndex !== null && editIndex < path.length ? editIndex : path.length;
+  const node: HistoryNode | null = nodeIndex < path.length ? path[nodeIndex] : pending;
+  const priorAnswer = node && session ? latestAnswer(session.answers, node.id) : undefined;
+  const isFinishing = phase === "question" && !!session && !pending;
+  const screenKey = phase === "question" ? node?.id : phase;
 
-  // A fresh question clears whatever was drafted for the previous one. Adjusting
+  // A new screen starts from the stored answer for that question, if there is
+  // one, so a reopened question is an edit rather than a re-entry. Adjusting
   // state during render (rather than in an effect) avoids an extra commit.
-  if (node?.id !== renderedNodeId) {
-    setRenderedNodeId(node?.id);
-    setDraftText("");
-    setMultiSelected(new Set());
+  if (screenKey !== renderedNodeId) {
+    setRenderedNodeId(screenKey);
+    const isText = node?.answerType === "text" || node?.answerType === "number" || node?.answerType === "duration";
+    setDraftText(phase === "question" && isText && priorAnswer ? String(priorAnswer.raw ?? "") : "");
+    setMultiSelected(new Set(phase === "question" && node ? selectedOptionIds(node, priorAnswer) : []));
+    setConfirmingStartOver(false);
   }
 
   useEffect(() => {
@@ -205,6 +285,13 @@ export default function IntakePage() {
         router.push("/emergency");
         return;
       }
+      // The route replaces the stored answer for this node rather than adding
+      // one. After an edit, step forward through the answered questions until
+      // the next unanswered one.
+      if (editIndex !== null) {
+        const next = editIndex + 1;
+        setEditIndex(next < answeredPath(tree, data.session.answers).length ? next : null);
+      }
       setSession(data.session);
     } catch {
       setError(COPY.saveError);
@@ -241,7 +328,24 @@ export default function IntakePage() {
     submitAnswer({ nodeId: node.id, raw: draftText, value: draftText, via: "type" });
   }
 
+  function startOver() {
+    // The abandoned session stays in the database with its status and red
+    // flag untouched. Only this kiosk's reference to it is dropped.
+    setSessionId(null);
+    router.push("/");
+  }
+
   const onToggleHighContrast = () => setHighContrast(!highContrast);
+
+  const footer = (onBack?: () => void) => (
+    <IntakeFooter
+      onBack={onBack}
+      busy={busy}
+      confirming={confirmingStartOver}
+      onConfirmingChange={setConfirmingStartOver}
+      onStartOver={startOver}
+    />
+  );
 
   if (phase === "name") {
     return (
@@ -265,6 +369,7 @@ export default function IntakePage() {
             {COPY.continue[lang]}
           </button>
         </div>
+        {footer()}
       </KioskShell>
     );
   }
@@ -294,6 +399,7 @@ export default function IntakePage() {
             {COPY.continue[lang]}
           </button>
         </div>
+        {footer()}
       </KioskShell>
     );
   }
@@ -326,6 +432,7 @@ export default function IntakePage() {
             {COPY.back[lang]}
           </button>
         </div>
+        {footer()}
       </KioskShell>
     );
   }
@@ -342,6 +449,16 @@ export default function IntakePage() {
   }
 
   const prog = session ? progress(tree, session.answers) : { answered: 0, total: 1, fraction: 0 };
+
+  // Back only reopens follow-up questions whose answer cannot change the
+  // branch, and is not offered on the first follow-up. See lib/intake-back.ts.
+  const target = backTarget(path, nodeIndex);
+  const onBack = target.kind === "node"
+    ? () => {
+        setError(null);
+        setEditIndex(target.index);
+      }
+    : undefined;
 
   return (
     <KioskShell
@@ -361,7 +478,7 @@ export default function IntakePage() {
       {node.answerType === "single" && (
         <OptionGrid
           options={node.options ?? []}
-          selectedIds={new Set()}
+          selectedIds={new Set(selectedOptionIds(node, priorAnswer))}
           disabled={busy}
           lang={lang}
           onTap={(option) => submitAnswer(tapAnswer(node, [option.id], lang))}
@@ -377,7 +494,7 @@ export default function IntakePage() {
             lang={lang}
             onTap={(option) => toggleMulti(option.id)}
           />
-          <div className="kiosk-nav-row">
+          <div className="kiosk-nav-row intake-continue-row">
             <button type="button" className="kiosk-primary-btn" disabled={busy} onClick={submitMulti}>
               {COPY.continue[lang]}
             </button>
@@ -388,7 +505,7 @@ export default function IntakePage() {
       {(node.answerType === "text" || node.answerType === "number" || node.answerType === "duration") && (
         <>
           <VoiceInput lang={lang} value={draftText} onChange={setDraftText} placeholder={COPY.textPlaceholder} />
-          <div className="kiosk-nav-row">
+          <div className="kiosk-nav-row intake-continue-row">
             <button type="button" className="kiosk-primary-btn" disabled={busy} onClick={submitText}>
               {COPY.continue[lang]}
             </button>
@@ -401,6 +518,8 @@ export default function IntakePage() {
           {error[lang]}
         </div>
       )}
+
+      {footer(onBack)}
     </KioskShell>
   );
 }

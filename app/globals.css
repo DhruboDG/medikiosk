@@ -210,6 +210,54 @@ body {
   margin-top: 8px;
 }
 
+/* ---------- Intake Back and Start over ----------
+   Continue sits on the right. Back and Start over sit in a separate row below
+   a rule, well apart from Continue, and are styled quieter than it. */
+
+.intake-continue-row {
+  justify-content: flex-end;
+}
+
+.intake-footer {
+  margin-top: 40px;
+  padding-top: 20px;
+  border-top: 1px solid var(--kiosk-border);
+}
+
+.intake-footer-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.intake-back-btn,
+.intake-quiet-btn {
+  font-size: var(--kiosk-font-base);
+  font-weight: 500;
+  background: transparent;
+}
+
+.intake-quiet-btn {
+  color: var(--kiosk-muted);
+  border-style: dashed;
+}
+
+.intake-confirm {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 12px;
+  background: var(--kiosk-surface);
+  border: 1px solid var(--kiosk-border);
+}
+
+.intake-confirm-text {
+  font-size: var(--kiosk-font-base);
+  margin: 0;
+}
+
 .kiosk-debug {
   margin-top: 24px;
   padding: 12px;
