@@ -18,9 +18,9 @@ export async function POST(request: NextRequest) {
     redFlag: { level: "none", concept: null, reason: "" },
     status: "in_progress",
     createdAt: new Date().toISOString(),
-    token: nextToken(),
+    token: await nextToken(),
   };
 
-  saveSession(session);
+  await saveSession(session);
   return NextResponse.json({ session });
 }

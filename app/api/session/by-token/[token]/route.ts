@@ -12,7 +12,7 @@ export async function GET(
     return NextResponse.json({ error: "invalid token" }, { status: 400 });
   }
 
-  const session = getSessionByToken(tokenNumber);
+  const session = await getSessionByToken(tokenNumber);
 
   if (!session) {
     return NextResponse.json({ error: "not found" }, { status: 404 });

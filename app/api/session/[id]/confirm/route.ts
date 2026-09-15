@@ -13,7 +13,7 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-  const session = getSession(id);
+  const session = await getSession(id);
 
   if (!session) {
     return NextResponse.json({ error: "not found" }, { status: 404 });
@@ -37,6 +37,6 @@ export async function POST(
     session.status = "confirmed";
   }
 
-  saveSession(session);
+  await saveSession(session);
   return NextResponse.json({ session });
 }

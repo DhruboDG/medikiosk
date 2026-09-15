@@ -1,11 +1,12 @@
-/* npm run reset-db. Deletes the sqlite file (and any WAL/journal siblings)
-   and recreates the schema by importing lib/db.ts, which runs its
-   CREATE TABLE IF NOT EXISTS statements on load. */
+/* npm run reset-db. Deletes the local sqlite file (and any WAL/journal
+   siblings) and recreates the schema through lib/db.ts ensureSchema().
+   Only touches the SQLite backend. If UPSTASH_REDIS_REST_URL is set, clear
+   the Redis database from the Upstash console instead. */
 
 import fs from "fs";
-import path from "path";
+import { ensureSchema, sqlitePath } from "../lib/db.ts";
 
-const dbPath = path.join(process.cwd(), "data", "medikiosk.db");
+const dbPath = sqlitePath();
 
 for (const suffix of ["", "-wal", "-shm", "-journal"]) {
   const file = `${dbPath}${suffix}`;
@@ -15,5 +16,4 @@ for (const suffix of ["", "-wal", "-shm", "-journal"]) {
   }
 }
 
-await import("../lib/db.ts");
-console.log(`Schema recreated at ${dbPath}`);
+console.log(`Schema recreated at ${ensureSchema()}`);

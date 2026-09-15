@@ -13,6 +13,6 @@ function byPriority(a: Session, b: Session): number {
 }
 
 export async function GET() {
-  const sessions = listSessions().sort(byPriority);
+  const sessions = (await listSessions()).sort(byPriority);
   return NextResponse.json({ sessions });
 }

@@ -48,7 +48,7 @@ async function main() {
   }
 
   console.log("\nQueue order (as the physician page will show it):\n");
-  printQueue(listSessions());
+  printQueue(await listSessions());
 }
 
 main().catch((err) => {

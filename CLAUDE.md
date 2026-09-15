@@ -48,8 +48,12 @@ accept, amend or reject.
 - **Next.js 16** App Router, TypeScript, Tailwind CSS. This is Next 16, not 14.
   `params` and `searchParams` are Promises and must be awaited in every route
   handler and every page. Do not write Next 14 style.
-- SQLite via `better-sqlite3` (installed and working, prebuilt binary). One file
-  at `data/medikiosk.db`.
+- Storage in `lib/db.ts`, all functions async. Locally: SQLite via
+  `better-sqlite3`, one file at `data/medikiosk.db`. On Vercel: Upstash Redis
+  when `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN` are set. Without
+  them the SQLite file falls back to the temp folder, which is per instance and
+  not durable. Never open the database at module load; the Vercel project folder
+  is read-only and that crashed every `/api/session` call.
 - Dev server on port 3100, because port 3000 is in use by an unrelated project
   on this machine. Set in `package.json`.
 - Speech in the browser: Web Speech API, wrapped in `lib/asr.ts`.

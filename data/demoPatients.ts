@@ -289,7 +289,7 @@ export async function seedDemoQueue(): Promise<Session[]> {
       redFlag: { level: "none", concept: null, reason: "" },
       status: "in_progress",
       createdAt,
-      token: nextToken(),
+      token: await nextToken(),
     };
 
     // Same order of operations as the real answer and summary routes: the
@@ -303,7 +303,7 @@ export async function seedDemoQueue(): Promise<Session[]> {
     session.fhirBundle = buildFhirBundle(session, session.summary);
     session.status = "pending_review";
 
-    saveSession(session);
+    await saveSession(session);
     created.push(session);
   }
 
